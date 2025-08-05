@@ -34,7 +34,6 @@ function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [darkMode, setDarkMode] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
     if (darkMode) {
