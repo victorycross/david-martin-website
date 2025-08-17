@@ -1,38 +1,33 @@
-// Netlify function for GitHub OAuth proxy
-// This handles the OAuth flow for Decap CMS
+export const handler = async (event, context) => {
+  const { httpMethod, queryStringParameters } = event;
 
-exports.handler = async (event, context) => {
-  const { httpMethod, queryStringParameters, body } = event;
-  
-  // Handle preflight requests
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+  };
+
+  // Handle preflight
   if (httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-      },
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
-  // GitHub OAuth endpoint
-  const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-  const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+  // Get environment variables
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
-  if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+  if (!clientId || !clientSecret) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
-        error: 'GitHub OAuth credentials not configured' 
-      })
+      headers,
+      body: JSON.stringify({ error: 'OAuth credentials not configured' })
     };
   }
 
   try {
-    if (httpMethod === 'GET' && queryStringParameters.code) {
-      // Exchange code for access token
+    // Handle OAuth callback (when GitHub redirects back with code)
+    if (queryStringParameters?.code) {
       const response = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
         headers: {
@@ -40,8 +35,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          client_id: GITHUB_CLIENT_ID,
-          client_secret: GITHUB_CLIENT_SECRET,
+          client_id: clientId,
+          client_secret: clientSecret,
           code: queryStringParameters.code,
         }),
       });
@@ -49,19 +44,13 @@ exports.handler = async (event, context) => {
       const data = await response.json();
 
       if (data.access_token) {
-        // Return success with token
         return {
           statusCode: 200,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'text/html',
-          },
+          headers: { ...headers, 'Content-Type': 'text/html' },
           body: `
             <!DOCTYPE html>
             <html>
-              <head>
-                <title>Authentication Success</title>
-              </head>
+              <head><title>Authentication Success</title></head>
               <body>
                 <script>
                   window.opener.postMessage({
@@ -75,34 +64,27 @@ exports.handler = async (event, context) => {
             </html>
           `
         };
-      } else {
-        throw new Error('Failed to get access token');
       }
+      
+      throw new Error('Failed to get access token');
     }
 
-    // Default response for auth initiation
+    // Initial OAuth request - redirect to GitHub
+    const scope = queryStringParameters?.scope || 'repo';
+    const redirectUri = 'https://monumental-truffle-405167.netlify.app/.netlify/functions/auth';
+    const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+
     return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ 
-        message: 'GitHub OAuth proxy ready',
-        client_id: GITHUB_CLIENT_ID 
-      })
+      statusCode: 302,
+      headers: { ...headers, Location: githubUrl },
+      body: ''
     };
 
   } catch (error) {
-    console.error('OAuth Error:', error);
     return {
       statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ 
-        error: 'Authentication failed',
-        details: error.message 
-      })
+      headers,
+      body: JSON.stringify({ error: error.message })
     };
   }
 };

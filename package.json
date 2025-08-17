@@ -17,7 +17,9 @@
     "cms:deploy:netlify": "node scripts/deploy-cms.js netlify",
     "cms:deploy:github": "node scripts/deploy-cms.js github-pages",
     "cms:local": "node scripts/deploy-cms.js local",
-    "migrate": "node scripts/migrate-content.js"
+    "migrate": "node scripts/migrate-content.js",
+    "setup:env": "node scripts/setup-env.js",
+    "deploy:with-env": "node scripts/deploy-with-env.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

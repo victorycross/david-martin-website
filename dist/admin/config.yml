@@ -2,7 +2,7 @@
 backend:
   name: github
   repo: victorycross/david-martin-website
-  branch: main  # Using main branch since that's where the live content is
+  branch: cms-redesign  # Using our CMS redesign branch
   squash_merges: true
   # OAuth configuration (remove local_backend for production)
   base_url: https://monumental-truffle-405167.netlify.app
