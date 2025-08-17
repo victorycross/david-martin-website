@@ -39,6 +39,8 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showInstructions, setShowInstructions] = useState(false)
+  const [tokenPermissions, setTokenPermissions] = useState(null)
+  const [showPermissions, setShowPermissions] = useState(false)
   const [formData, setFormData] = useState({
     home: {
       title: 'Clarity. Connection. Risk with Purpose.',
@@ -211,6 +213,19 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         
         // Set up GitHub service with the token
         githubService.setToken(authToken.trim())
+        
+        // Check token permissions
+        try {
+          const permissions = await secureAuth.checkTokenPermissions(authToken.trim())
+          setTokenPermissions(permissions)
+          console.log('Token permissions:', permissions)
+          
+          if (!permissions.hasRepo || !permissions.canWrite) {
+            setSaveStatus('warning:Limited permissions detected. Save functionality may not work.')
+          }
+        } catch (error) {
+          console.warn('Could not check token permissions:', error)
+        }
         
         // Load current content from GitHub
         try {
@@ -441,6 +456,20 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
                   </AlertDescription>
                 </Alert>
                 
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <p><strong>Troubleshooting Save Issues:</strong></p>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        {instructions.troubleshooting.map((tip, index) => (
+                          <li key={index}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+                
                 <Button 
                   variant="outline" 
                   onClick={() => setShowInstructions(false)}
@@ -498,6 +527,16 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
                     {currentUser.login}
                   </Badge>
                 )}
+                {tokenPermissions && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPermissions(!showPermissions)}
+                  >
+                    <Key className="w-4 h-4 mr-2" />
+                    {tokenPermissions.canWrite ? 'Permissions OK' : 'Check Permissions'}
+                  </Button>
+                )}
               </div>
               
               <Button 
@@ -511,6 +550,84 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
           </div>
         </div>
 
+        {/* Token Permissions Display */}
+        {showPermissions && tokenPermissions && (
+          <Card className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Key className="w-5 h-5 mr-2" />
+                GitHub Token Permissions
+              </CardTitle>
+              <CardDescription>
+                Current token permissions and repository access
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium mb-2">Token Scopes</h4>
+                  <div className="space-y-1">
+                    {tokenPermissions.scopes.length > 0 ? (
+                      tokenPermissions.scopes.map((scope, index) => (
+                        <Badge key={index} variant="secondary">{scope}</Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-600">No scopes detected</p>
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium mb-2">Repository Access</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      {tokenPermissions.hasRepo ? (
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                      )}
+                      <span className="text-sm">Full repo access</span>
+                    </div>
+                    <div className="flex items-center">
+                      {tokenPermissions.canWrite ? (
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                      )}
+                      <span className="text-sm">Can write to repository</span>
+                    </div>
+                    <div className="flex items-center">
+                      {tokenPermissions.canPush ? (
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                      )}
+                      <span className="text-sm">Can push commits</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {(!tokenPermissions.hasRepo || !tokenPermissions.canWrite) && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <p><strong>Insufficient Permissions Detected</strong></p>
+                      <p>Your token needs the following permissions to save content:</p>
+                      <ul className="list-disc list-inside text-sm">
+                        <li>Full <strong>"repo"</strong> scope (not just "public_repo")</li>
+                        <li>Write access to the repository</li>
+                        <li>Push permissions</li>
+                      </ul>
+                      <p>Please regenerate your token with full "repo" permissions.</p>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-7">

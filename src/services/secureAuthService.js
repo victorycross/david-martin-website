@@ -214,6 +214,53 @@ class SecureAuthService {
     }
   }
 
+  // Check token permissions and scopes
+  async checkTokenPermissions(token) {
+    try {
+      // Check token scopes
+      const response = await fetch(`${this.baseUrl}/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Token validation failed: ${response.status}`);
+      }
+
+      // Get token scopes from response headers
+      const scopes = response.headers.get('X-OAuth-Scopes') || '';
+      const tokenScopes = scopes.split(',').map(s => s.trim()).filter(Boolean);
+
+      // Check repository-specific permissions
+      const repoResponse = await fetch(`${this.baseUrl}/repos/${this.repoOwner}/${this.repoName}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      });
+
+      let repoPermissions = {};
+      if (repoResponse.ok) {
+        const repo = await repoResponse.json();
+        repoPermissions = repo.permissions || {};
+      }
+
+      return {
+        scopes: tokenScopes,
+        hasRepo: tokenScopes.includes('repo'),
+        hasContents: tokenScopes.includes('repo') || tokenScopes.includes('contents:write'),
+        repoPermissions: repoPermissions,
+        canPush: repoPermissions.push || false,
+        canWrite: repoPermissions.admin || repoPermissions.push || false
+      };
+    } catch (error) {
+      console.error('Error checking token permissions:', error);
+      throw error;
+    }
+  }
+
   // Generate secure token instructions
   getTokenInstructions() {
     return {
@@ -223,15 +270,22 @@ class SecureAuthService {
         "Click 'Generate new token (classic)'",
         "Give it a descriptive name like 'David Martin Website Admin'",
         "Select expiration (recommend 90 days for security)",
-        "Select scopes: 'repo' (Full control of private repositories)",
+        "Select scopes: 'repo' (Full control of private repositories) - THIS IS CRITICAL",
+        "Make sure 'repo' includes all sub-permissions (repo:status, repo_deployment, public_repo, repo:invite, security_events)",
         "Click 'Generate token' and copy it immediately",
         "Paste the token in the field below"
       ],
       security: [
         "Tokens expire automatically for security",
-        "Only repository owners/collaborators can access admin panel",
+        "Only repository owners/collaborators can access admin panel", 
         "Sessions expire after 24 hours",
         "Tokens are verified against GitHub API on each login"
+      ],
+      troubleshooting: [
+        "If save fails: Token needs 'repo' scope (not just 'public_repo')",
+        "If 403 errors: You may not be a repository collaborator",
+        "If 404 errors: Repository may be private and token lacks access",
+        "Try regenerating token with full 'repo' permissions"
       ]
     };
   }
