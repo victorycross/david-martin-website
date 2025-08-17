@@ -1,0 +1,44 @@
+{
+  "title": "Work & Expertise",
+  "slug": "work",
+  "publishDate": "2025-08-17T19:57:32.117Z",
+  "focusAreas": "Exploring the intersection of AI governance, human-centered design, and organizational resilience. Particularly interested in how we can build systems that are both innovative and trustworthy.",
+  "services": [
+    {
+      "title": "AI & Risk Governance",
+      "description": "Developing frameworks for responsible AI deployment, risk assessment, and governance structures that balance innovation with ethical considerations.",
+      "tags": [
+        "AI Ethics",
+        "Risk Frameworks",
+        "Governance Design"
+      ]
+    },
+    {
+      "title": "Technology Risk Management",
+      "description": "Helping organizations identify, assess, and mitigate technology-related risks while enabling digital transformation and innovation initiatives.",
+      "tags": [
+        "Digital Risk",
+        "Cybersecurity",
+        "Compliance"
+      ]
+    },
+    {
+      "title": "Creative Frameworks",
+      "description": "Building tools and methodologies that bridge analytical thinking with creative problem-solving, helping teams approach complex challenges with fresh perspectives.",
+      "tags": [
+        "Design Thinking",
+        "Innovation Tools",
+        "Prototyping"
+      ]
+    },
+    {
+      "title": "Advisory & Thought Leadership",
+      "description": "Providing strategic guidance to leadership teams on emerging technology trends, organizational resilience, and the human side of digital transformation.",
+      "tags": [
+        "Strategic Advisory",
+        "Executive Coaching",
+        "Change Management"
+      ]
+    }
+  ]
+}

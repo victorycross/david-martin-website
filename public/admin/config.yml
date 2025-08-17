@@ -1,0 +1,221 @@
+# Decap CMS Configuration
+backend:
+  name: github
+  repo: victorycross/david-martin-website
+  branch: main  # Using main branch since that's where the live content is
+  squash_merges: true
+  # OAuth configuration (remove local_backend for production)
+  base_url: https://monumental-truffle-405167.netlify.app
+  auth_endpoint: /.netlify/functions/auth
+
+# Local development (comment out for production)
+# local_backend: true
+
+# Media files storage
+media_folder: "public/images"
+public_folder: "/images"
+
+# Enable editorial workflow for drafts
+publish_mode: editorial_workflow
+
+# Content Collections
+collections:
+  - name: "pages"
+    label: "📄 Pages"
+    files:
+      - name: "home"
+        label: "🏠 Home Page"
+        file: "content/pages/home.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "text" }
+          - label: "Hero Lines"
+            name: "heroLines"
+            widget: "list"
+            allow_add: true
+            field: { label: "Line", name: "line", widget: "string" }
+
+      - name: "about"
+        label: "👤 About Page"
+        file: "content/pages/about.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - label: "Bio Paragraphs"
+            name: "bio"
+            widget: "list"
+            allow_add: true
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - { label: "Current Role", name: "currentRole", widget: "string" }
+          - { label: "Company", name: "company", widget: "string" }
+          - label: "Skills & Expertise"
+            name: "skills"
+            widget: "list"
+            allow_add: true
+            field: { label: "Skill", name: "skill", widget: "string" }
+          - label: "Core Values"
+            name: "values"
+            widget: "list"
+            allow_add: true
+            field: { label: "Value", name: "value", widget: "string" }
+
+      - name: "work"
+        label: "💼 Work & Expertise"
+        file: "content/pages/work.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Focus Areas", name: "focusAreas", widget: "text" }
+          - label: "Services"
+            name: "services"
+            widget: "list"
+            allow_add: true
+            fields:
+              - { label: "Service Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - label: "Tags"
+                name: "tags"
+                widget: "list"
+                allow_add: true
+                field: { label: "Tag", name: "tag", widget: "string" }
+
+      - name: "coaching"
+        label: "🎯 Coaching"
+        file: "content/pages/coaching.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - label: "Approach"
+            name: "approach"
+            widget: "list"
+            allow_add: true
+            field: { label: "Approach Item", name: "item", widget: "text" }
+          - label: "Philosophy"
+            name: "philosophy"
+            widget: "object"
+            fields:
+              - { label: "Conversation", name: "conversation", widget: "text" }
+              - { label: "Truth Telling", name: "truthTelling", widget: "text" }
+              - { label: "Integration", name: "integration", widget: "text" }
+          - { label: "Invitation", name: "invitation", widget: "text" }
+
+      - name: "contact"
+        label: "📧 Contact"
+        file: "content/pages/contact.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Location", name: "location", widget: "string" }
+          - { label: "Response Time", name: "responseTime", widget: "string" }
+          - label: "Social Links"
+            name: "socialLinks"
+            widget: "list"
+            allow_add: true
+            fields:
+              - { label: "Platform", name: "platform", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+
+      - name: "music"
+        label: "🎵 Music"
+        file: "content/pages/music.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Philosophy", name: "philosophy", widget: "text" }
+          - label: "Influences"
+            name: "influences"
+            widget: "object"
+            fields:
+              - label: "Jazz"
+                name: "jazz"
+                widget: "object"
+                fields:
+                  - { label: "Description", name: "description", widget: "text" }
+                  - label: "Artists"
+                    name: "artists"
+                    widget: "list"
+                    field: { label: "Artist", name: "artist", widget: "string" }
+              - label: "Alternative"
+                name: "alternative"
+                widget: "object"
+                fields:
+                  - { label: "Description", name: "description", widget: "text" }
+                  - label: "Artists"
+                    name: "artists"
+                    widget: "list"
+                    field: { label: "Artist", name: "artist", widget: "string" }
+
+  - name: "blog"
+    label: "📝 Essays & Blog"
+    folder: "content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Description/Excerpt", name: "description", widget: "text" }
+      - { label: "Content", name: "body", widget: "markdown" }
+      - { label: "Tags", name: "tags", widget: "list", default: ["essay"] }
+      - label: "Status"
+        name: "status"
+        widget: "select" 
+        options: ["Draft", "Published", "Final"]
+        default: "Draft"
+
+  - name: "compositions"
+    label: "🎼 Music Compositions"
+    folder: "content/music"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Instrument", name: "instrument", widget: "string" }
+      - { label: "Duration", name: "duration", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Audio File", name: "audioFile", widget: "file", required: false }
+      - { label: "Date Composed", name: "date", widget: "date" }
+
+  - name: "ideas"
+    label: "💡 Ideas in Progress"
+    folder: "content/ideas"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Status", name: "status", widget: "select", options: ["Idea", "In Progress", "Paused", "Completed"] }
+      - { label: "Date Created", name: "date", widget: "date" }
+
+  - name: "observations"
+    label: "🔍 Observations"
+    folder: "content/observations"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Observation", name: "content", widget: "text" }
+      - { label: "Date", name: "date", widget: "date" }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+
+  - name: "settings"
+    label: "⚙️ Site Settings"
+    files:
+      - name: "general"
+        label: "General Settings"
+        file: "content/settings/general.json"
+        fields:
+          - { label: "Site Title", name: "title", widget: "string" }
+          - { label: "Site Description", name: "description", widget: "text" }
+          - { label: "Site URL", name: "siteUrl", widget: "string" }
+          - label: "Contact Info"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "Email", name: "email", widget: "string" }
+              - { label: "Location", name: "location", widget: "string" }
+              - { label: "Response Time", name: "responseTime", widget: "string" }
+          - label: "Social Links"
+            name: "socialLinks"
+            widget: "list"
+            allow_add: true
+            fields:
+              - { label: "Platform", name: "platform", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }

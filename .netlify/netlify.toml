@@ -1,0 +1,71 @@
+functionsDirectory = "/Users/davidmartin/david-martin-website-clone/netlify/functions"
+functionsDirectoryOrigin = "default"
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[build]
+publish = "/Users/davidmartin/david-martin-website-clone/dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
+functions = "/Users/davidmartin/david-martin-website-clone/netlify/functions"
+
+[build.environment]
+GITHUB_CLIENT_ID = "YOUR_GITHUB_CLIENT_ID"
+GITHUB_CLIENT_SECRET = "YOUR_GITHUB_CLIENT_SECRET"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[functions]
+
+[functions."*"]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "max-age=31536000, immutable"
+
+[[redirects]]
+from = "/admin/*"
+to = "/admin/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
