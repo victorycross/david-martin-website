@@ -1,0 +1,23 @@
+{
+  "title": "About David",
+  "slug": "about",
+  "publishDate": "2025-08-17T19:57:32.117Z",
+  "bio": [
+    "I believe in the power of clear thinking, authentic connection, and purposeful risk-taking. My work sits at the intersection of technology, human behavior, and organizational resilience.",
+    "Currently serving as a Managing Director at PwC, I focus on AI governance, technology risk management, and helping organizations navigate the complex landscape of emerging technologies. My approach combines analytical rigor with creative problem-solving and a deep commitment to ethical leadership.",
+    "Beyond the corporate world, I explore ideas through writing, music, and coaching conversations. I'm fascinated by the stories we tell ourselves, the systems we build, and the courage it takes to create meaningful change."
+  ],
+  "currentRole": "Managing Director",
+  "company": "PwC Canada",
+  "skills": [
+    "AI Governance",
+    "Risk Management",
+    "Innovation Strategy"
+  ],
+  "values": [
+    "Clarity over complexity",
+    "Truth over comfort",
+    "Growth over perfection",
+    "Connection over transaction"
+  ]
+}

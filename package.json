@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "cms:dev": "node scripts/start-cms-proxy.js",
+    "cms:proxy": "npx decap-server",
+    "migrate": "node scripts/migrate-content.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -45,6 +48,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "decap-cms-app": "^3.8.3",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.15.0",
     "input-otp": "^1.4.2",
