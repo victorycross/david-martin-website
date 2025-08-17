@@ -84,6 +84,15 @@ class GitHubService {
     }
   }
 
+  // Helper function for Unicode-safe Base64 encoding
+  base64EncodeUnicode(str) {
+    // First, escape the string using encodeURIComponent to handle Unicode characters
+    // Then convert the percent-encoded string to Base64
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+      return String.fromCharCode('0x' + p1);
+    }));
+  }
+
   // Update content file
   async updateContentFile(newContent, commitMessage = 'Update website content via admin panel') {
     try {
@@ -92,8 +101,18 @@ class GitHubService {
       // First get the current file to get its SHA (if it exists)
       const currentFile = await this.getContentFile();
       
-      // Prepare the updated content
-      const encodedContent = btoa(JSON.stringify(newContent, null, 2));
+      // Prepare the updated content with Unicode-safe encoding
+      const contentString = JSON.stringify(newContent, null, 2);
+      let encodedContent;
+      
+      try {
+        // Use Unicode-safe Base64 encoding
+        encodedContent = this.base64EncodeUnicode(contentString);
+      } catch (encodeError) {
+        console.error('Error encoding content:', encodeError);
+        console.error('Content that failed to encode:', contentString.substring(0, 500));
+        throw new Error('Failed to encode content - please check for special characters');
+      }
       
       // Prepare request body
       const requestBody = {
