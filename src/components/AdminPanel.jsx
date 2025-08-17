@@ -185,9 +185,16 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         // Load current content from GitHub
         try {
           const contentFile = await githubService.getContentFile()
-          setFormData(contentFile.content)
+          if (contentFile && contentFile.content) {
+            console.log('Loaded content from GitHub:', Object.keys(contentFile.content))
+            // Merge with default data to ensure all sections exist
+            setFormData(prev => ({
+              ...prev,
+              ...contentFile.content
+            }))
+          }
         } catch (error) {
-          console.warn('Could not load content from GitHub, using default data')
+          console.warn('Could not load content from GitHub, using default data:', error)
         }
       }
     }
@@ -230,9 +237,19 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         // Load current content from GitHub
         try {
           const contentFile = await githubService.getContentFile()
-          setFormData(contentFile.content)
-          setSaveStatus('success:Authentication successful! Content loaded from GitHub.')
+          if (contentFile && contentFile.content) {
+            console.log('Loaded content from GitHub after auth:', Object.keys(contentFile.content))
+            // Merge with default data to ensure all sections exist
+            setFormData(prev => ({
+              ...prev,
+              ...contentFile.content
+            }))
+            setSaveStatus('success:Authentication successful! Content loaded from GitHub.')
+          } else {
+            setSaveStatus('success:Authentication successful! Using default content.')
+          }
         } catch (error) {
+          console.warn('Could not load content from GitHub after auth:', error)
           setSaveStatus('success:Authentication successful! Using default content.')
         }
         
@@ -257,6 +274,7 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
   const handleSave = async (section) => {
     setSaveStatus('saving')
     console.log('Starting save for section:', section)
+    console.log('Section data being saved:', JSON.stringify(formData[section], null, 2))
     
     try {
       if (isAuthenticated) {
@@ -269,6 +287,10 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         }
         
         console.log('Token available, updating section:', section)
+        
+        // Log the data size to check if it's too large
+        const dataSize = JSON.stringify(formData[section]).length
+        console.log(`Data size for ${section}: ${dataSize} characters`)
         
         // Save to GitHub repository
         await githubService.updateSection(section, formData[section])
@@ -300,10 +322,18 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         message: error.message,
         stack: error.stack,
         section: section,
+        dataSize: JSON.stringify(formData[section]).length,
         isAuthenticated: isAuthenticated
       })
       
-      setSaveStatus(`error:Failed to save changes - ${error.message}`)
+      // Check if it's a specific GitHub API error
+      if (error.message.includes('422')) {
+        setSaveStatus(`error:Invalid data format - please check your entries`)
+      } else if (error.message.includes('413')) {
+        setSaveStatus(`error:Content too large - try reducing the amount of text`)
+      } else {
+        setSaveStatus(`error:Failed to save changes - ${error.message}`)
+      }
       setTimeout(() => setSaveStatus(''), 8000)
     }
   }

@@ -134,7 +134,9 @@ class GitHubService {
   // Update specific section of content
   async updateSection(sectionName, sectionData) {
     try {
-      console.log(`Updating section: ${sectionName}`, sectionData);
+      console.log(`Updating section: ${sectionName}`);
+      console.log('Section data size:', JSON.stringify(sectionData).length, 'characters');
+      console.log('Section data preview:', JSON.stringify(sectionData).substring(0, 200));
       
       const currentFile = await this.getContentFile();
       
@@ -147,14 +149,19 @@ class GitHubService {
       };
 
       console.log('Updated content structure:', Object.keys(updatedContent));
+      console.log('Total content size:', JSON.stringify(updatedContent).length, 'characters');
 
-      return await this.updateContentFile(
+      const result = await this.updateContentFile(
         updatedContent,
         `Update ${sectionName} section content`
       );
+      
+      console.log(`Successfully updated ${sectionName} section`);
+      return result;
     } catch (error) {
       console.error(`Error updating ${sectionName} section:`, error);
-      console.error('Section data:', sectionData);
+      console.error('Section data:', JSON.stringify(sectionData).substring(0, 500));
+      console.error('Error response:', error.response || 'No response data');
       throw error;
     }
   }
