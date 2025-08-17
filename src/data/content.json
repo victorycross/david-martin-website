@@ -126,7 +126,7 @@
   },
   "coaching": {
     "title": "Coaching & Connection",
-    "description": "Coaching, for me, is about creating space for authentic conversation and genuine growth. It's not about having all the answers—it's about asking better questions and holding space for truth.",
+    "description": "Coaching, for me, is about creating space for authentic conversation and genuine growth. It's not about having all the answersâit's about asking better questions and holding space for truth.",
     "approach": [
       "Creating safe spaces for difficult conversations and honest reflection",
       "Helping leaders navigate the tension between analytical thinking and intuitive wisdom",
@@ -143,17 +143,13 @@
   "contact": {
     "title": "Get in Touch",
     "description": "Whether you're interested in discussing a project, exploring ideas, or simply having a thoughtful conversation, I'd love to hear from you. I believe the best collaborations start with genuine connection.",
-    "email": "david.martin@example.com",
+    "email": "",
     "location": "Toronto, Canada",
     "responseTime": "I read every message personally and aim to respond within 48 hours.",
     "socialLinks": [
       {
         "platform": "LinkedIn",
-        "url": "https://linkedin.com/in/davidmartin"
-      },
-      {
-        "platform": "Twitter",
-        "url": "https://twitter.com/davidmartin"
+        "url": "https://linkedin.com/in/dmartinpwc"
       }
     ]
   }
