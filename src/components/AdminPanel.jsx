@@ -23,20 +23,22 @@ import {
   Github,
   Key,
   Wifi,
-  WifiOff
+  WifiOff,
+  Shield,
+  Clock,
+  User
 } from 'lucide-react'
 import githubService from '../services/githubService.js'
+import secureAuth from '../services/secureAuthService.js'
 
 const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
+  const [authToken, setAuthToken] = useState('')
   const [activeTab, setActiveTab] = useState('home')
   const [saveStatus, setSaveStatus] = useState('')
-  const [githubToken, setGithubToken] = useState('')
-  const [githubConnected, setGithubConnected] = useState(false)
-  const [showGithubSetup, setShowGithubSetup] = useState(false)
-  const [repoInfo, setRepoInfo] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(false)
   const [formData, setFormData] = useState({
     home: {
       title: 'Clarity. Connection. Risk with Purpose.',
@@ -168,55 +170,79 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
   })
 
   useEffect(() => {
-    // Check if GitHub token exists and test connection
-    const checkGitHubConnection = async () => {
-      const token = githubService.getToken()
-      if (token) {
-        setGithubToken(token)
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      if (secureAuth.isAuthenticated()) {
+        setIsAuthenticated(true)
+        setCurrentUser(secureAuth.getCurrentUser())
+        
+        // Set up GitHub service with the token
+        const token = secureAuth.getAccessToken()
+        githubService.setToken(token)
+        
+        // Load current content from GitHub
         try {
-          const connectionTest = await githubService.testConnection()
-          if (connectionTest.success) {
-            setGithubConnected(true)
-            const info = await githubService.getRepoInfo()
-            setRepoInfo(info)
-            
-            // Load current content from GitHub
-            try {
-              const contentFile = await githubService.getContentFile()
-              setFormData(contentFile.content)
-            } catch (error) {
-              console.warn('Could not load content from GitHub, using default data')
-            }
-          }
+          const contentFile = await githubService.getContentFile()
+          setFormData(contentFile.content)
         } catch (error) {
-          console.warn('GitHub connection failed:', error.message)
-          setGithubConnected(false)
+          console.warn('Could not load content from GitHub, using default data')
         }
       }
     }
 
-    if (isAuthenticated) {
-      checkGitHubConnection()
-    }
-  }, [isAuthenticated])
+    checkAuth()
+  }, [])
 
-  const handleAuth = () => {
-    // Simple password check - in production, use proper authentication
-    // Change this password to your preferred secure password
-    const ADMIN_PASSWORD = 'MySecurePassword2024!';
-    
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      setSaveStatus('')
-    } else {
-      setSaveStatus('error:Invalid password')
+  const handleAuth = async () => {
+    if (!authToken.trim()) {
+      setSaveStatus('error:Please enter your GitHub Personal Access Token')
+      return
     }
+
+    setLoading(true)
+    setSaveStatus('')
+    
+    try {
+      const result = await secureAuth.authenticate(authToken.trim())
+      
+      if (result.success) {
+        setIsAuthenticated(true)
+        setCurrentUser(result.user)
+        
+        // Set up GitHub service with the token
+        githubService.setToken(authToken.trim())
+        
+        // Load current content from GitHub
+        try {
+          const contentFile = await githubService.getContentFile()
+          setFormData(contentFile.content)
+          setSaveStatus('success:Authentication successful! Content loaded from GitHub.')
+        } catch (error) {
+          setSaveStatus('success:Authentication successful! Using default content.')
+        }
+        
+        setAuthToken('') // Clear token from state for security
+      }
+    } catch (error) {
+      setSaveStatus(`error:${error.message}`)
+    } finally {
+      setLoading(false)
+      setTimeout(() => setSaveStatus(''), 5000)
+    }
+  }
+
+  const handleLogout = () => {
+    secureAuth.logout()
+    setIsAuthenticated(false)
+    setCurrentUser(null)
+    setAuthToken('')
+    setSaveStatus('')
   }
 
   const handleSave = async (section) => {
     setSaveStatus('saving')
     try {
-      if (githubConnected) {
+      if (isAuthenticated) {
         // Save to GitHub repository
         await githubService.updateSection(section, formData[section])
         setSaveStatus('success:Changes saved and deployed to GitHub!')
@@ -234,7 +260,7 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         if (onUpdateContent) {
           onUpdateContent(section, formData[section])
         }
-        setSaveStatus('success:Changes saved locally (GitHub not connected)')
+        setSaveStatus('success:Changes saved locally (not authenticated)')
       }
       
       setTimeout(() => setSaveStatus(''), 5000)
@@ -244,41 +270,6 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
     }
   }
 
-  const handleGitHubSetup = async () => {
-    if (!githubToken.trim()) {
-      setSaveStatus('error:Please enter a valid GitHub token')
-      return
-    }
-
-    setLoading(true)
-    try {
-      githubService.setToken(githubToken.trim())
-      const connectionTest = await githubService.testConnection()
-      
-      if (connectionTest.success) {
-        setGithubConnected(true)
-        setShowGithubSetup(false)
-        const info = await githubService.getRepoInfo()
-        setRepoInfo(info)
-        
-        // Load current content from GitHub
-        try {
-          const contentFile = await githubService.getContentFile()
-          setFormData(contentFile.content)
-          setSaveStatus('success:GitHub connected and content loaded!')
-        } catch (error) {
-          setSaveStatus('success:GitHub connected (using local content)')
-        }
-      } else {
-        setSaveStatus(`error:${connectionTest.message}`)
-      }
-    } catch (error) {
-      setSaveStatus(`error:GitHub connection failed - ${error.message}`)
-    } finally {
-      setLoading(false)
-      setTimeout(() => setSaveStatus(''), 5000)
-    }
-  }
 
   const handleInputChange = (section, field, value, index = null) => {
     setFormData(prev => {
@@ -316,45 +307,126 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
   }
 
   if (!isAuthenticated) {
+    const instructions = secureAuth.getTokenInstructions()
+    
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                <Lock className="w-6 h-6 text-white" />
+                <Shield className="w-6 h-6 text-white" />
               </div>
             </div>
-            <CardTitle>Admin Access</CardTitle>
+            <CardTitle>Secure Admin Access</CardTitle>
             <CardDescription>
-              Enter the admin password to access the content management panel
+              Authenticate with your GitHub Personal Access Token for secure repository access
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
-                placeholder="Enter admin password"
-                className="mt-1"
-              />
-            </div>
-            {saveStatus.startsWith('error:') && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {saveStatus.split(':')[1]}
-                </AlertDescription>
-              </Alert>
+          <CardContent className="space-y-6">
+            {!showInstructions ? (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="auth-token">GitHub Personal Access Token</Label>
+                  <Input
+                    id="auth-token"
+                    type="password"
+                    value={authToken}
+                    onChange={(e) => setAuthToken(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
+                    placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                    className="mt-1"
+                  />
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                    Enter your GitHub Personal Access Token with 'repo' permissions
+                  </p>
+                </div>
+                
+                {saveStatus.startsWith('error:') && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {saveStatus.split(':')[1]}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                {saveStatus.startsWith('success:') && (
+                  <Alert>
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {saveStatus.split(':')[1]}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                <div className="flex space-x-3">
+                  <Button 
+                    onClick={handleAuth} 
+                    disabled={loading || !authToken.trim()}
+                    className="flex-1"
+                  >
+                    {loading ? (
+                      <>
+                        <Settings className="w-4 h-4 mr-2 animate-spin" />
+                        Authenticating...
+                      </>
+                    ) : (
+                      <>
+                        <Github className="w-4 h-4 mr-2" />
+                        Authenticate
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowInstructions(true)}
+                  >
+                    <Key className="w-4 h-4 mr-2" />
+                    Need Token?
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <Alert>
+                  <Key className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-3">
+                      <p><strong>{instructions.title}:</strong></p>
+                      <ol className="list-decimal list-inside space-y-1 text-sm">
+                        {instructions.steps.map((step, index) => (
+                          <li key={index}>{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert>
+                  <Shield className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <p><strong>Security Features:</strong></p>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        {instructions.security.map((feature, index) => (
+                          <li key={index}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowInstructions(false)}
+                  className="w-full"
+                >
+                  Back to Login
+                </Button>
+              </div>
             )}
-            <Button onClick={handleAuth} className="w-full">
-              <Unlock className="w-4 h-4 mr-2" />
-              Access Admin Panel
-            </Button>
           </CardContent>
         </Card>
       </div>
@@ -393,30 +465,21 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
               )}
               
               <div className="flex items-center space-x-2">
-                {githubConnected ? (
-                  <Badge variant="default" className="bg-green-600">
-                    <Wifi className="w-3 h-3 mr-1" />
-                    GitHub Connected
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="bg-orange-600">
-                    <WifiOff className="w-3 h-3 mr-1" />
-                    GitHub Disconnected
+                <Badge variant="default" className="bg-green-600">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Authenticated
+                </Badge>
+                {currentUser && (
+                  <Badge variant="secondary">
+                    <User className="w-3 h-3 mr-1" />
+                    {currentUser.login}
                   </Badge>
                 )}
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowGithubSetup(!showGithubSetup)}
-                >
-                  <Github className="w-4 h-4 mr-2" />
-                  GitHub Setup
-                </Button>
               </div>
               
               <Button 
                 variant="outline" 
-                onClick={() => setIsAuthenticated(false)}
+                onClick={handleLogout}
               >
                 <Lock className="w-4 h-4 mr-2" />
                 Logout
@@ -425,97 +488,6 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
           </div>
         </div>
 
-        {/* GitHub Setup Section */}
-        {showGithubSetup && (
-          <Card className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Github className="w-5 h-5 mr-2" />
-                GitHub Integration Setup
-              </CardTitle>
-              <CardDescription>
-                Connect your GitHub account to automatically deploy content changes to your live website.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {githubConnected && repoInfo ? (
-                <div className="space-y-3">
-                  <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Connected to <strong>{repoInfo.repo.fullName}</strong> as <strong>{repoInfo.user.login}</strong>
-                    </AlertDescription>
-                  </Alert>
-                  <div className="flex items-center space-x-4">
-                    <Badge variant="default">Repository: {repoInfo.repo.name}</Badge>
-                    <Badge variant="secondary">User: {repoInfo.user.name || repoInfo.user.login}</Badge>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      githubService.setToken('')
-                      setGithubConnected(false)
-                      setGithubToken('')
-                      setRepoInfo(null)
-                    }}
-                  >
-                    Disconnect GitHub
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="github-token">GitHub Personal Access Token</Label>
-                    <Input
-                      id="github-token"
-                      type="password"
-                      value={githubToken}
-                      onChange={(e) => setGithubToken(e.target.value)}
-                      placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                      className="mt-1"
-                    />
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                      You'll need a GitHub Personal Access Token with 'repo' permissions.
-                    </p>
-                  </div>
-                  
-                  <Alert>
-                    <Key className="h-4 w-4" />
-                    <AlertDescription>
-                      <div className="space-y-2">
-                        <p><strong>To create a GitHub token:</strong></p>
-                        <ol className="list-decimal list-inside space-y-1 text-sm">
-                          <li>Go to GitHub → Settings → Developer settings → Personal access tokens</li>
-                          <li>Click "Generate new token (classic)"</li>
-                          <li>Select "repo" scope for repository access</li>
-                          <li>Copy the token and paste it above</li>
-                        </ol>
-                      </div>
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <Button 
-                    onClick={handleGitHubSetup}
-                    disabled={loading || !githubToken.trim()}
-                    className="w-full"
-                  >
-                    {loading ? (
-                      <>
-                        <Settings className="w-4 h-4 mr-2 animate-spin" />
-                        Connecting...
-                      </>
-                    ) : (
-                      <>
-                        <Github className="w-4 h-4 mr-2" />
-                        Connect GitHub
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-7">
