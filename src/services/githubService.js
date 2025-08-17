@@ -1,0 +1,179 @@
+// GitHub API service for content management
+class GitHubService {
+  constructor() {
+    this.owner = 'victorycross';
+    this.repo = 'david-martin-website';
+    this.branch = 'main';
+    this.baseUrl = 'https://api.github.com';
+    
+    // These would typically be stored more securely
+    // For now, we'll use a simple approach that requires manual token setup
+    this.token = null;
+  }
+
+  // Set the GitHub personal access token
+  setToken(token) {
+    this.token = token;
+    localStorage.setItem('github_token', token);
+  }
+
+  // Get token from localStorage or prompt user
+  getToken() {
+    if (this.token) return this.token;
+    
+    const stored = localStorage.getItem('github_token');
+    if (stored) {
+      this.token = stored;
+      return stored;
+    }
+    
+    return null;
+  }
+
+  // Make authenticated request to GitHub API
+  async makeRequest(endpoint, options = {}) {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('GitHub token not configured. Please set up your GitHub personal access token.');
+    }
+
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    const response = await fetch(url, {
+      ...options,
+      headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+      throw new Error(`GitHub API Error: ${response.status} - ${error.message}`);
+    }
+
+    return response.json();
+  }
+
+  // Get current content file
+  async getContentFile() {
+    try {
+      const response = await this.makeRequest(
+        `/repos/${this.owner}/${this.repo}/contents/src/data/content.json?ref=${this.branch}`
+      );
+      
+      // Decode base64 content
+      const content = JSON.parse(atob(response.content));
+      return {
+        content,
+        sha: response.sha
+      };
+    } catch (error) {
+      console.error('Error fetching content file:', error);
+      throw error;
+    }
+  }
+
+  // Update content file
+  async updateContentFile(newContent, commitMessage = 'Update website content via admin panel') {
+    try {
+      // First get the current file to get its SHA
+      const currentFile = await this.getContentFile();
+      
+      // Prepare the updated content
+      const encodedContent = btoa(JSON.stringify(newContent, null, 2));
+      
+      const response = await this.makeRequest(
+        `/repos/${this.owner}/${this.repo}/contents/src/data/content.json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: `${commitMessage}\n\n🤖 Generated with Claude Code Admin Panel\n\nCo-Authored-By: Claude <noreply@anthropic.com>`,
+            content: encodedContent,
+            sha: currentFile.sha,
+            branch: this.branch
+          })
+        }
+      );
+
+      return response;
+    } catch (error) {
+      console.error('Error updating content file:', error);
+      throw error;
+    }
+  }
+
+  // Update specific section of content
+  async updateSection(sectionName, sectionData) {
+    try {
+      const currentFile = await this.getContentFile();
+      const updatedContent = {
+        ...currentFile.content,
+        [sectionName]: sectionData
+      };
+
+      return await this.updateContentFile(
+        updatedContent,
+        `Update ${sectionName} section content`
+      );
+    } catch (error) {
+      console.error(`Error updating ${sectionName} section:`, error);
+      throw error;
+    }
+  }
+
+  // Test connection and permissions
+  async testConnection() {
+    try {
+      await this.makeRequest(`/repos/${this.owner}/${this.repo}`);
+      return { success: true, message: 'GitHub connection successful' };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: `Connection failed: ${error.message}` 
+      };
+    }
+  }
+
+  // Get repository information
+  async getRepoInfo() {
+    try {
+      const repo = await this.makeRequest(`/repos/${this.owner}/${this.repo}`);
+      const user = await this.makeRequest('/user');
+      
+      return {
+        repo: {
+          name: repo.name,
+          fullName: repo.full_name,
+          private: repo.private,
+          url: repo.html_url
+        },
+        user: {
+          login: user.login,
+          name: user.name,
+          avatar: user.avatar_url
+        }
+      };
+    } catch (error) {
+      console.error('Error getting repo info:', error);
+      throw error;
+    }
+  }
+
+  // Trigger GitHub Pages deployment (if needed)
+  async triggerDeployment() {
+    try {
+      // GitHub Pages automatically deploys on push to main branch
+      // This is just a placeholder for any additional deployment logic
+      return { success: true, message: 'Deployment triggered automatically' };
+    } catch (error) {
+      console.error('Error triggering deployment:', error);
+      throw error;
+    }
+  }
+}
+
+export default new GitHubService();

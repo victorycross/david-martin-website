@@ -28,6 +28,7 @@ import {
   Calendar,
   Coffee
 } from 'lucide-react'
+import contentData from './data/content.json'
 import './App.css'
 
 function App() {
@@ -141,12 +142,14 @@ function App() {
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="block">Clarity.</span>
-              <span className="block text-blue-600">Connection.</span>
-              <span className="block">Risk with Purpose.</span>
+              {contentData.home.heroLines.map((line, index) => (
+                <span key={index} className={`block ${index === 1 ? 'text-blue-600' : ''}`}>
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
-              David Martin helps leaders and teams make smarter decisions, navigate complexity, and build with intention.
+              {contentData.home.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -174,25 +177,16 @@ function App() {
       <section id="about" className={`py-20 px-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">About David</h2>
+            <h2 className="text-4xl font-bold mb-12 text-center">{contentData.about.title}</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
               <div className="lg:col-span-2 space-y-6">
                 <div className="prose prose-lg dark:prose-invert max-w-none">
-                  <p className="text-lg leading-relaxed">
-                    I believe in the power of clear thinking, authentic connection, and purposeful risk-taking. 
-                    My work sits at the intersection of technology, human behavior, and organizational resilience.
-                  </p>
-                  <p className="text-lg leading-relaxed">
-                    Currently serving as a Senior Manager at PwC, I focus on AI governance, technology risk management, 
-                    and helping organizations navigate the complex landscape of emerging technologies. My approach combines 
-                    analytical rigor with creative problem-solving and a deep commitment to ethical leadership.
-                  </p>
-                  <p className="text-lg leading-relaxed">
-                    Beyond the corporate world, I explore ideas through writing, music, and coaching conversations. 
-                    I'm fascinated by the stories we tell ourselves, the systems we build, and the courage it takes 
-                    to create meaningful change.
-                  </p>
+                  {contentData.about.bio.map((paragraph, index) => (
+                    <p key={index} className="text-lg leading-relaxed">
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -224,14 +218,14 @@ function App() {
                     <h3 className="font-semibold mb-4">Current Role</h3>
                     <div className="space-y-3">
                       <div>
-                        <p className="font-medium">Senior Manager</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">PwC Canada</p>
+                        <p className="font-medium">{contentData.about.currentRole}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{contentData.about.company}</p>
                       </div>
                       <Separator />
                       <div className="space-y-2">
-                        <Badge variant="secondary">AI Governance</Badge>
-                        <Badge variant="secondary">Risk Management</Badge>
-                        <Badge variant="secondary">Innovation Strategy</Badge>
+                        {contentData.about.skills.map((skill, index) => (
+                          <Badge key={index} variant="secondary">{skill}</Badge>
+                        ))}
                       </div>
                     </div>
                   </CardContent>
@@ -241,22 +235,12 @@ function App() {
                   <CardContent className="p-6">
                     <h3 className="font-semibold mb-4">Core Values</h3>
                     <ul className="space-y-2 text-sm">
-                      <li className="flex items-center">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                        Clarity over complexity
-                      </li>
-                      <li className="flex items-center">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                        Truth over comfort
-                      </li>
-                      <li className="flex items-center">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                        Growth over perfection
-                      </li>
-                      <li className="flex items-center">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                        Connection over transaction
-                      </li>
+                      {contentData.about.values.map((value, index) => (
+                        <li key={index} className="flex items-center">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                          {value}
+                        </li>
+                      ))}
                     </ul>
                   </CardContent>
                 </Card>
@@ -270,88 +254,34 @@ function App() {
       <section id="work" className="py-20 px-4">
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">Work & Expertise</h2>
+            <h2 className="text-4xl font-bold mb-12 text-center">{contentData.work.title}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <Shield className="w-8 h-8 text-blue-600" />
-                    <CardTitle>AI & Risk Governance</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Developing frameworks for responsible AI deployment, risk assessment, and governance structures 
-                    that balance innovation with ethical considerations.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="outline">AI Ethics</Badge>
-                    <Badge variant="outline">Risk Frameworks</Badge>
-                    <Badge variant="outline">Governance Design</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <Briefcase className="w-8 h-8 text-blue-600" />
-                    <CardTitle>Technology Risk Management</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Helping organizations identify, assess, and mitigate technology-related risks while enabling 
-                    digital transformation and innovation initiatives.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="outline">Digital Risk</Badge>
-                    <Badge variant="outline">Cybersecurity</Badge>
-                    <Badge variant="outline">Compliance</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <Lightbulb className="w-8 h-8 text-blue-600" />
-                    <CardTitle>Creative Frameworks</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Building tools and methodologies that bridge analytical thinking with creative problem-solving, 
-                    helping teams approach complex challenges with fresh perspectives.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="outline">Design Thinking</Badge>
-                    <Badge variant="outline">Innovation Tools</Badge>
-                    <Badge variant="outline">Prototyping</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <Users className="w-8 h-8 text-blue-600" />
-                    <CardTitle>Advisory & Thought Leadership</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Providing strategic guidance to leadership teams on emerging technology trends, organizational 
-                    resilience, and the human side of digital transformation.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="outline">Strategic Advisory</Badge>
-                    <Badge variant="outline">Executive Coaching</Badge>
-                    <Badge variant="outline">Change Management</Badge>
-                  </div>
-                </CardContent>
-              </Card>
+              {contentData.work.services.map((service, index) => {
+                const icons = [Shield, Briefcase, Lightbulb, Users];
+                const IconComponent = icons[index] || Shield;
+                
+                return (
+                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-center space-x-3">
+                        <IconComponent className="w-8 h-8 text-blue-600" />
+                        <CardTitle>{service.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4">
+                        {service.description}
+                      </p>
+                      <div className="space-y-2">
+                        {service.tags.map((tag, tagIndex) => (
+                          <Badge key={tagIndex} variant="outline">{tag}</Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
 
             <div className="mt-12 text-center">
@@ -359,8 +289,7 @@ function App() {
                 <CardContent className="p-8">
                   <h3 className="text-xl font-semibold mb-4">Current Focus Areas</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Exploring the intersection of AI governance, human-centered design, and organizational resilience. 
-                    Particularly interested in how we can build systems that are both innovative and trustworthy.
+                    {contentData.work.focusAreas}
                   </p>
                   <Button variant="outline" onClick={() => scrollToSection('contact')}>
                     Discuss a Project

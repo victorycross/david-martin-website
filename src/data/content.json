@@ -1,0 +1,129 @@
+{
+  "home": {
+    "title": "Clarity. Connection. Risk with Purpose.",
+    "subtitle": "David Martin helps leaders and teams make smarter decisions, navigate complexity, and build with intention.",
+    "heroLines": ["Clarity.", "Connection.", "Risk with Purpose."]
+  },
+  "about": {
+    "title": "About David",
+    "bio": [
+      "I believe in the power of clear thinking, authentic connection, and purposeful risk-taking. My work sits at the intersection of technology, human behavior, and organizational resilience.",
+      "Currently serving as a Senior Manager at PwC, I focus on AI governance, technology risk management, and helping organizations navigate the complex landscape of emerging technologies. My approach combines analytical rigor with creative problem-solving and a deep commitment to ethical leadership.",
+      "Beyond the corporate world, I explore ideas through writing, music, and coaching conversations. I'm fascinated by the stories we tell ourselves, the systems we build, and the courage it takes to create meaningful change."
+    ],
+    "currentRole": "Senior Manager",
+    "company": "PwC Canada",
+    "skills": ["AI Governance", "Risk Management", "Innovation Strategy"],
+    "values": [
+      "Clarity over complexity",
+      "Truth over comfort", 
+      "Growth over perfection",
+      "Connection over transaction"
+    ]
+  },
+  "work": {
+    "title": "Work & Expertise",
+    "focusAreas": "Exploring the intersection of AI governance, human-centered design, and organizational resilience. Particularly interested in how we can build systems that are both innovative and trustworthy.",
+    "services": [
+      {
+        "title": "AI & Risk Governance",
+        "description": "Developing frameworks for responsible AI deployment, risk assessment, and governance structures that balance innovation with ethical considerations.",
+        "tags": ["AI Ethics", "Risk Frameworks", "Governance Design"]
+      },
+      {
+        "title": "Technology Risk Management", 
+        "description": "Helping organizations identify, assess, and mitigate technology-related risks while enabling digital transformation and innovation initiatives.",
+        "tags": ["Digital Risk", "Cybersecurity", "Compliance"]
+      },
+      {
+        "title": "Creative Frameworks",
+        "description": "Building tools and methodologies that bridge analytical thinking with creative problem-solving, helping teams approach complex challenges with fresh perspectives.",
+        "tags": ["Design Thinking", "Innovation Tools", "Prototyping"]
+      },
+      {
+        "title": "Advisory & Thought Leadership",
+        "description": "Providing strategic guidance to leadership teams on emerging technology trends, organizational resilience, and the human side of digital transformation.",
+        "tags": ["Strategic Advisory", "Executive Coaching", "Change Management"]
+      }
+    ]
+  },
+  "creative": {
+    "title": "Creative Explorations",
+    "essays": [
+      {
+        "title": "On Uncertainty as a Feature",
+        "excerpt": "We spend so much energy trying to eliminate uncertainty, but what if it's actually the space where innovation lives? What if the goal isn't to predict the future, but to build the capacity to dance with whatever emerges?",
+        "status": "Draft",
+        "date": "November 2024"
+      },
+      {
+        "title": "The Stories Systems Tell",
+        "excerpt": "Every system embeds a story about how the world works. The question isn't whether our systems have values—it's whether we're conscious of what those values are.",
+        "status": "Published",
+        "date": "October 2024"
+      }
+    ],
+    "ideasInProgress": [
+      {
+        "title": "The Empathy-Analytics Bridge",
+        "description": "Exploring frameworks that help data-driven organizations maintain human connection and emotional intelligence in decision-making processes."
+      },
+      {
+        "title": "Risk as Creative Constraint",
+        "description": "How risk management principles can actually enhance creativity by providing structure and boundaries that enable more focused innovation."
+      }
+    ],
+    "observations": [
+      "The best meetings feel like jazz improvisation—everyone knows the structure, but magic happens in the spaces between the notes.",
+      "Dreamed of a world where every algorithm came with a poet's commentary. Woke up wondering why this isn't already a thing.",
+      "Overheard: 'We need to move fast and break things.' Underheard: 'But what if we moved thoughtfully and built things that last?'"
+    ]
+  },
+  "music": {
+    "title": "Music & Sound",
+    "description": "Music has always been my way of processing complexity and finding patterns that words can't capture. From jazz improvisation to alt-rock exploration, sound helps me think differently about everything else.",
+    "compositions": [
+      { "title": "Uncertainty Variations", "instrument": "Piano", "duration": "3:42" },
+      { "title": "Systems Thinking Blues", "instrument": "Guitar", "duration": "4:15" },
+      { "title": "Algorithmic Lullaby", "instrument": "Mixed", "duration": "2:58" }
+    ],
+    "influences": {
+      "jazz": {
+        "description": "The improvisational spirit of jazz informs how I approach problem-solving in all areas. There's something about working within structure while staying open to emergence.",
+        "artists": ["Bill Evans", "Keith Jarrett", "Brad Mehldau"]
+      },
+      "alternative": {
+        "description": "The willingness to break conventional forms and explore new sonic territories. This experimental mindset carries over into how I think about innovation and risk.",
+        "artists": ["Radiohead", "Bon Iver", "Thom Yorke"]
+      }
+    },
+    "philosophy": "Music teaches you to listen for patterns, to hold multiple rhythms simultaneously, and to find beauty in dissonance. These are exactly the skills we need for navigating complexity in any domain."
+  },
+  "coaching": {
+    "title": "Coaching & Connection",
+    "description": "Coaching, for me, is about creating space for authentic conversation and genuine growth. It's not about having all the answers—it's about asking better questions and holding space for truth.",
+    "approach": [
+      "Creating safe spaces for difficult conversations and honest reflection",
+      "Helping leaders navigate the tension between analytical thinking and intuitive wisdom",
+      "Supporting individuals in finding their authentic voice and leadership style",
+      "Exploring the intersection of personal growth and professional effectiveness"
+    ],
+    "philosophy": {
+      "conversation": "I believe in the power of dialogue. We explore questions together, and insights emerge from the space between us rather than from prescribed solutions.",
+      "truthTelling": "Sometimes the most supportive thing is to gently challenge assumptions or point out patterns that might be invisible from the inside.",
+      "integration": "The goal isn't to accumulate more knowledge but to integrate what you already know in ways that create sustainable change."
+    },
+    "invitation": "If you're navigating a complex challenge, exploring a career transition, or simply want to think out loud with someone who listens deeply, I'd be honored to have that conversation with you."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "description": "Whether you're interested in discussing a project, exploring ideas, or simply having a thoughtful conversation, I'd love to hear from you. I believe the best collaborations start with genuine connection.",
+    "email": "david.martin@example.com",
+    "location": "Toronto, Canada",
+    "responseTime": "I read every message personally and aim to respond within 48 hours.",
+    "socialLinks": [
+      { "platform": "LinkedIn", "url": "https://linkedin.com/in/davidmartin" },
+      { "platform": "Twitter", "url": "https://twitter.com/davidmartin" }
+    ]
+  }
+}
