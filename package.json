@@ -13,6 +13,10 @@
     "deploy": "gh-pages -d dist",
     "cms:dev": "node scripts/start-cms-proxy.js",
     "cms:proxy": "npx decap-server",
+    "cms:deploy": "node scripts/deploy-cms.js",
+    "cms:deploy:netlify": "node scripts/deploy-cms.js netlify",
+    "cms:deploy:github": "node scripts/deploy-cms.js github-pages",
+    "cms:local": "node scripts/deploy-cms.js local",
     "migrate": "node scripts/migrate-content.js"
   },
   "dependencies": {

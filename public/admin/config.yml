@@ -4,9 +4,12 @@ backend:
   repo: victorycross/david-martin-website
   branch: cms-redesign  # Using our CMS redesign branch
   squash_merges: true
+  # OAuth configuration (remove local_backend for production)
+  base_url: https://david-martin.ca
+  auth_endpoint: /api/auth
 
-# Local development
-local_backend: true
+# Local development (comment out for production)
+# local_backend: true
 
 # Media files storage
 media_folder: "public/images"
