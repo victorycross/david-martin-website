@@ -73,6 +73,13 @@ class GitHubService {
       };
     } catch (error) {
       console.error('Error fetching content file:', error);
+      
+      // If file doesn't exist (404), return null
+      if (error.message.includes('404')) {
+        console.log('Content file does not exist, will create new one');
+        return null;
+      }
+      
       throw error;
     }
   }
@@ -80,28 +87,46 @@ class GitHubService {
   // Update content file
   async updateContentFile(newContent, commitMessage = 'Update website content via admin panel') {
     try {
-      // First get the current file to get its SHA
+      console.log('Updating content file with:', { newContent, commitMessage });
+      
+      // First get the current file to get its SHA (if it exists)
       const currentFile = await this.getContentFile();
       
       // Prepare the updated content
       const encodedContent = btoa(JSON.stringify(newContent, null, 2));
       
+      // Prepare request body
+      const requestBody = {
+        message: `${commitMessage}\n\n🤖 Generated with Claude Code Admin Panel\n\nCo-Authored-By: Claude <noreply@anthropic.com>`,
+        content: encodedContent,
+        branch: this.branch
+      };
+      
+      // Add SHA only if file exists
+      if (currentFile && currentFile.sha) {
+        requestBody.sha = currentFile.sha;
+        console.log('Updating existing file with SHA:', currentFile.sha);
+      } else {
+        console.log('Creating new content file');
+      }
+      
+      console.log('Making GitHub API request...');
       const response = await this.makeRequest(
         `/repos/${this.owner}/${this.repo}/contents/src/data/content.json`,
         {
           method: 'PUT',
-          body: JSON.stringify({
-            message: `${commitMessage}\n\n🤖 Generated with Claude Code Admin Panel\n\nCo-Authored-By: Claude <noreply@anthropic.com>`,
-            content: encodedContent,
-            sha: currentFile.sha,
-            branch: this.branch
-          })
+          body: JSON.stringify(requestBody)
         }
       );
 
+      console.log('GitHub API response:', response);
       return response;
     } catch (error) {
       console.error('Error updating content file:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
       throw error;
     }
   }
@@ -109,11 +134,19 @@ class GitHubService {
   // Update specific section of content
   async updateSection(sectionName, sectionData) {
     try {
+      console.log(`Updating section: ${sectionName}`, sectionData);
+      
       const currentFile = await this.getContentFile();
+      
+      // If no current file, create with default structure
+      const baseContent = currentFile ? currentFile.content : {};
+      
       const updatedContent = {
-        ...currentFile.content,
+        ...baseContent,
         [sectionName]: sectionData
       };
+
+      console.log('Updated content structure:', Object.keys(updatedContent));
 
       return await this.updateContentFile(
         updatedContent,
@@ -121,6 +154,7 @@ class GitHubService {
       );
     } catch (error) {
       console.error(`Error updating ${sectionName} section:`, error);
+      console.error('Section data:', sectionData);
       throw error;
     }
   }

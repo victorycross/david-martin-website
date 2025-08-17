@@ -241,10 +241,24 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
 
   const handleSave = async (section) => {
     setSaveStatus('saving')
+    console.log('Starting save for section:', section)
+    
     try {
       if (isAuthenticated) {
+        console.log('User is authenticated, attempting GitHub save...')
+        
+        // First test GitHub connection
+        const token = secureAuth.getAccessToken()
+        if (!token) {
+          throw new Error('No authentication token available')
+        }
+        
+        console.log('Token available, updating section:', section)
+        
         // Save to GitHub repository
         await githubService.updateSection(section, formData[section])
+        console.log('Save successful!')
+        
         setSaveStatus('success:Changes saved and deployed to GitHub!')
         
         // Trigger GitHub Pages deployment (automatic on push)
@@ -256,6 +270,7 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
           }
         }, 1000)
       } else {
+        console.log('User not authenticated, saving locally')
         // Fallback to local callback
         if (onUpdateContent) {
           onUpdateContent(section, formData[section])
@@ -265,8 +280,16 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
       
       setTimeout(() => setSaveStatus(''), 5000)
     } catch (error) {
+      console.error('Save error:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        section: section,
+        isAuthenticated: isAuthenticated
+      })
+      
       setSaveStatus(`error:Failed to save changes - ${error.message}`)
-      setTimeout(() => setSaveStatus(''), 5000)
+      setTimeout(() => setSaveStatus(''), 8000)
     }
   }
 
