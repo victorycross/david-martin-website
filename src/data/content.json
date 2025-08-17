@@ -73,35 +73,9 @@
   },
   "creative": {
     "title": "Creative Explorations",
-    "essays": [
-      {
-        "title": "On Uncertainty as a Feature",
-        "excerpt": "We spend so much energy trying to eliminate uncertainty, but what if it's actually the space where innovation lives? What if the goal isn't to predict the future, but to build the capacity to dance with whatever emerges?",
-        "status": "Draft",
-        "date": "November 2024"
-      },
-      {
-        "title": "The Stories Systems Tell",
-        "excerpt": "Every system embeds a story about how the world works. The question isn't whether our systems have values—it's whether we're conscious of what those values are.",
-        "status": "Published",
-        "date": "October 2024"
-      }
-    ],
-    "ideasInProgress": [
-      {
-        "title": "The Empathy-Analytics Bridge",
-        "description": "Exploring frameworks that help data-driven organizations maintain human connection and emotional intelligence in decision-making processes."
-      },
-      {
-        "title": "Risk as Creative Constraint",
-        "description": "How risk management principles can actually enhance creativity by providing structure and boundaries that enable more focused innovation."
-      }
-    ],
-    "observations": [
-      "The best meetings feel like jazz improvisation—everyone knows the structure, but magic happens in the spaces between the notes.",
-      "Dreamed of a world where every algorithm came with a poet's commentary. Woke up wondering why this isn't already a thing.",
-      "Overheard: 'We need to move fast and break things.' Underheard: 'But what if we moved thoughtfully and built things that last?'"
-    ]
+    "essays": [],
+    "ideasInProgress": [],
+    "observations": []
   },
   "music": {
     "title": "Music & Sound",
