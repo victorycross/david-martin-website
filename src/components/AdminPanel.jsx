@@ -527,16 +527,31 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
                     {currentUser.login}
                   </Badge>
                 )}
-                {tokenPermissions && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowPermissions(!showPermissions)}
-                  >
-                    <Key className="w-4 h-4 mr-2" />
-                    {tokenPermissions.canWrite ? 'Permissions OK' : 'Check Permissions'}
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    if (!tokenPermissions) {
+                      // Check permissions if not already checked
+                      try {
+                        const token = secureAuth.getAccessToken()
+                        if (token) {
+                          const permissions = await secureAuth.checkTokenPermissions(token)
+                          setTokenPermissions(permissions)
+                          console.log('Manual permission check:', permissions)
+                        }
+                      } catch (error) {
+                        console.error('Permission check failed:', error)
+                        setSaveStatus(`error:Permission check failed - ${error.message}`)
+                        setTimeout(() => setSaveStatus(''), 5000)
+                      }
+                    }
+                    setShowPermissions(!showPermissions)
+                  }}
+                >
+                  <Key className="w-4 h-4 mr-2" />
+                  {tokenPermissions?.canWrite ? 'Permissions OK' : 'Check Permissions'}
+                </Button>
               </div>
               
               <Button 
@@ -551,7 +566,7 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
         </div>
 
         {/* Token Permissions Display */}
-        {showPermissions && tokenPermissions && (
+        {showPermissions && (
           <Card className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -563,52 +578,80 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2">Token Scopes</h4>
-                  <div className="space-y-1">
-                    {tokenPermissions.scopes.length > 0 ? (
-                      tokenPermissions.scopes.map((scope, index) => (
-                        <Badge key={index} variant="secondary">{scope}</Badge>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-600">No scopes detected</p>
-                    )}
-                  </div>
+              {!tokenPermissions ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600 mb-4">Checking token permissions...</p>
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        const token = secureAuth.getAccessToken()
+                        if (token) {
+                          const permissions = await secureAuth.checkTokenPermissions(token)
+                          setTokenPermissions(permissions)
+                          console.log('Permission check result:', permissions)
+                        }
+                      } catch (error) {
+                        console.error('Permission check failed:', error)
+                        setSaveStatus(`error:Permission check failed - ${error.message}`)
+                        setTimeout(() => setSaveStatus(''), 5000)
+                      }
+                    }}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Check Permissions Now
+                  </Button>
                 </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">Repository Access</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center">
-                      {tokenPermissions.hasRepo ? (
-                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
-                      )}
-                      <span className="text-sm">Full repo access</span>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-2">Token Scopes</h4>
+                      <div className="space-y-1">
+                        {tokenPermissions.scopes?.length > 0 ? (
+                          tokenPermissions.scopes.map((scope, index) => (
+                            <Badge key={index} variant="secondary">{scope}</Badge>
+                          ))
+                        ) : (
+                          <p className="text-sm text-gray-600">No scopes detected</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      {tokenPermissions.canWrite ? (
-                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
-                      )}
-                      <span className="text-sm">Can write to repository</span>
-                    </div>
-                    <div className="flex items-center">
-                      {tokenPermissions.canPush ? (
-                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
-                      )}
-                      <span className="text-sm">Can push commits</span>
+                    
+                    <div>
+                      <h4 className="font-medium mb-2">Repository Access</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center">
+                          {tokenPermissions.hasRepo ? (
+                            <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                          )}
+                          <span className="text-sm">Full repo access</span>
+                        </div>
+                        <div className="flex items-center">
+                          {tokenPermissions.canWrite ? (
+                            <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                          )}
+                          <span className="text-sm">Can write to repository</span>
+                        </div>
+                        <div className="flex items-center">
+                          {tokenPermissions.canPush ? (
+                            <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                          )}
+                          <span className="text-sm">Can push commits</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                  
+                </>
+              )}
               
-              {(!tokenPermissions.hasRepo || !tokenPermissions.canWrite) && (
+              {tokenPermissions && (!tokenPermissions.hasRepo || !tokenPermissions.canWrite) && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
