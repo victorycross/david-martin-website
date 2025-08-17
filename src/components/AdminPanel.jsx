@@ -202,7 +202,10 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
 
   const handleAuth = () => {
     // Simple password check - in production, use proper authentication
-    if (password === 'admin123') {
+    // Change this password to your preferred secure password
+    const ADMIN_PASSWORD = 'MySecurePassword2024!';
+    
+    if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true)
       setSaveStatus('')
     } else {
