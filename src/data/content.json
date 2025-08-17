@@ -73,7 +73,14 @@
   },
   "creative": {
     "title": "Creative Explorations",
-    "essays": [],
+    "essays": [
+      {
+        "title": "From TikTok to Tech Leadership: Why AI Needs Experienced Advocates",
+        "excerpt": "AI adoption succeeds when people lead with trust, mentorship, and expertise. hashtag#AIAdoption hashtag#Leadership hashtag#Mentorship hashtag#DeveloperExperience hashtag#GitHubCopilot",
+        "status": "Final",
+        "date": "2025-08-17"
+      }
+    ],
     "ideasInProgress": [],
     "observations": []
   },
