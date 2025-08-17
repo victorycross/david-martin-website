@@ -7,7 +7,7 @@ import AdminPanel from './components/AdminPanel.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Router basename="/david-martin-website">
+    <Router basename="/">
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/admin" element={<AdminPanel />} />
