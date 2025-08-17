@@ -1570,17 +1570,75 @@ const AdminPanel = ({ onUpdateContent, initialData = {} }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Changes are automatically saved and will be deployed to GitHub Pages.
+                  Changes are automatically deployed to GitHub Pages when you save each section.
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Deployment usually takes 1-2 minutes to complete.
                 </p>
               </div>
               <div className="flex space-x-2">
-                <Button variant="outline">
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    // Open the live site in a new tab
+                    window.open('https://david-martin.ca', '_blank')
+                  }}
+                >
                   <Eye className="w-4 h-4 mr-2" />
-                  Preview Changes
+                  View Live Site
                 </Button>
-                <Button>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Deploy to Live Site
+                <Button
+                  onClick={async () => {
+                    setSaveStatus('saving')
+                    try {
+                      // Save all sections
+                      const sections = ['home', 'about', 'work', 'creative', 'music', 'coaching', 'contact']
+                      
+                      console.log('Deploying all sections...')
+                      
+                      // Get the current content from GitHub first
+                      const currentFile = await githubService.getContentFile()
+                      const baseContent = currentFile ? currentFile.content : {}
+                      
+                      // Merge current form data with existing content
+                      const fullContent = {
+                        ...baseContent,
+                        ...formData
+                      }
+                      
+                      // Update the entire content file
+                      await githubService.updateContentFile(
+                        fullContent,
+                        'Deploy all sections from admin panel'
+                      )
+                      
+                      setSaveStatus('success:All sections deployed successfully! Changes will be live in 1-2 minutes.')
+                      
+                      // Open the live site after a short delay
+                      setTimeout(() => {
+                        window.open('https://david-martin.ca', '_blank')
+                      }, 2000)
+                      
+                      setTimeout(() => setSaveStatus(''), 8000)
+                    } catch (error) {
+                      console.error('Deployment error:', error)
+                      setSaveStatus(`error:Deployment failed - ${error.message}`)
+                      setTimeout(() => setSaveStatus(''), 8000)
+                    }
+                  }}
+                  disabled={saveStatus === 'saving'}
+                >
+                  {saveStatus === 'saving' ? (
+                    <>
+                      <Settings className="w-4 h-4 mr-2 animate-spin" />
+                      Deploying...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Deploy All Sections
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
