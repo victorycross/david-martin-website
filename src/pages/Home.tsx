@@ -1,18 +1,16 @@
-import { Code, Palette, PenTool } from "lucide-react"
-import { HeroPanel } from "@/components/hero-panel"
-
+import { Code, Palette, PenTool } from "lucide-react";
+import { HeroPanel } from "@/components/hero-panel";
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-gradient-hero">
+  return <div className="min-h-screen bg-gradient-hero">
       {/* Hero Section */}
       <section className="container pt-20 pb-16">
         <div className="text-center max-w-4xl mx-auto mb-16">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            <span className="text-gradient">Create.</span>
+            <span className="text-gradient font-light">Create.</span>
             <br />
             <span className="text-gradient">Build.</span>
             <br />
-            <span className="text-gradient">Write.</span>
+            <span className="text-gradient font-light">Write.</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             I'm David Martin, leader for National Security, AI Trust and Technology Risk, 
@@ -22,29 +20,11 @@ export default function Home() {
 
         {/* Three Panel Grid */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <HeroPanel
-            title="Create"
-            description="Explore my creative journey through music, visual art, and innovative projects that blend technology with artistic expression."
-            icon={<Palette className="h-8 w-8 text-white" />}
-            href="/creative"
-            gradient="bg-gradient-primary"
-          />
+          <HeroPanel title="Create" description="Explore my creative journey through music, visual art, and innovative projects that blend technology with artistic expression." icon={<Palette className="h-8 w-8 text-white" />} href="/creative" gradient="bg-gradient-primary" />
           
-          <HeroPanel
-            title="Build"
-            description="Discover applications I've developed for crisis management, exception tracking, and AI-powered tools that solve real-world problems."
-            icon={<Code className="h-8 w-8 text-white" />}
-            href="/applications"
-            gradient="bg-accent"
-          />
+          <HeroPanel title="Build" description="Discover applications I've developed for crisis management, exception tracking, and AI-powered tools that solve real-world problems." icon={<Code className="h-8 w-8 text-white" />} href="/applications" gradient="bg-accent" />
           
-          <HeroPanel
-            title="Write"
-            description="Read my thoughts on technology risk, AI governance, and insights from my work in financial services and beyond."
-            icon={<PenTool className="h-8 w-8 text-white" />}
-            href="/writing"
-            gradient="bg-success"
-          />
+          <HeroPanel title="Write" description="Read my thoughts on technology risk, AI governance, and insights from my work in financial services and beyond." icon={<PenTool className="h-8 w-8 text-white" />} href="/writing" gradient="bg-success" />
         </div>
       </section>
 
@@ -61,13 +41,10 @@ export default function Home() {
             </div>
             <div className="text-center">
               <h3 className="font-semibold mb-2">Personal</h3>
-              <p className="text-muted-foreground">
-                Music enthusiast, motorcycle rider, and woodworking craftsman.
-              </p>
+              <p className="text-muted-foreground">Music enthusiast, vespa and motorcycle rider, and woodworking enthusiast.</p>
             </div>
           </div>
         </div>
       </section>
-    </div>
-  )
+    </div>;
 }

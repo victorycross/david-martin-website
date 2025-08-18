@@ -5,12 +5,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/navigation";
+import { useAuth } from "@/hooks/use-auth";
 import Home from "./pages/Home";
 import Writing from "./pages/Writing";
 import Creative from "./pages/Creative";
 import Applications from "./pages/Applications";
 import About from "./pages/About";
 import Socials from "./pages/Socials";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 
@@ -18,12 +20,13 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const [mounted, setMounted] = useState(false);
+  const { loading } = useAuth();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -44,6 +47,7 @@ const AppContent = () => {
         <Route path="/applications" element={<Applications />} />
         <Route path="/about" element={<About />} />
         <Route path="/socials" element={<Socials />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

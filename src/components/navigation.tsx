@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LogIn, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useAuth } from "@/hooks/use-auth"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     setMounted(true)
@@ -58,6 +60,29 @@ export function Navigation() {
               {item.label}
             </Link>
           ))}
+          {user ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="gap-2"
+            >
+              <Link to="/auth">
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Link>
+            </Button>
+          )}
           <ThemeToggle />
         </div>
 
@@ -93,6 +118,32 @@ export function Navigation() {
                 {item.label}
               </Link>
             ))}
+            {user ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  signOut()
+                  handleLinkClick()
+                }}
+                className="w-full justify-start gap-2 px-3"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="w-full justify-start gap-2 px-3"
+              >
+                <Link to="/auth" onClick={handleLinkClick}>
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       )}
