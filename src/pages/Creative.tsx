@@ -12,25 +12,25 @@ export default function Creative() {
   const [artRefreshTrigger, setArtRefreshTrigger] = useState(0)
   const musicProjects = [
     {
-      title: "Coding Flow",
+      title: "Lofi Girl",
       description: "Perfect background music for focused programming sessions and creative work.",
-      genre: "Electronic/Ambient",
+      genre: "Lofi Hip Hop",
       tracks: "50+ tracks",
-      embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator",
+      embed: "https://open.spotify.com/embed/playlist/37i9dQZF1E4yVfD4M4LwFh?utm_source=generator",
     },
     {
-      title: "Creative Inspiration",
-      description: "An eclectic mix of genres to spark creativity and keep the energy flowing.",
-      genre: "Multi-Genre",
-      tracks: "80+ tracks", 
-      embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DX1s9knjP51Oa?utm_source=generator",
+      title: "Album Discovery",
+      description: "Featured album selection showcasing diverse musical expressions and artistic creativity.",
+      genre: "Featured Album",
+      tracks: "Album tracks", 
+      embed: "https://open.spotify.com/embed/album/48D1hRORqJq52qsnUYZX56?utm_source=generator",
     },
     {
-      title: "Chill Vibes",
-      description: "Relaxed tunes for unwinding and contemplative moments.",
-      genre: "Indie/Alternative",
+      title: "Cocteau Twins Radio",
+      description: "Ethereal soundscapes and dreamy textures for contemplative moments.",
+      genre: "Dream Pop/Shoegaze",
       tracks: "40+ tracks",
-      embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DX3rxVfibe1L0?utm_source=generator",
+      embed: "https://open.spotify.com/embed/playlist/37i9dQZF1E4lRkwtpIt1y2?utm_source=generator",
     }
   ]
 
