@@ -63,8 +63,8 @@ jobs:
         cp .github/workflows/deploy.yml /tmp/deploy.yml.backup || true
         cp .github/workflows/sync-from-lovable.yml /tmp/sync-from-lovable.yml.backup || true
         
-        # Get all files from lovable repo except .git and preserved files
-        git checkout lovable/main -- . || true
+        # Get all files from lovable repo except .git and workflow files
+        git checkout lovable/main -- ':!.github' || true
         
         # Restore preserved files
         mkdir -p public
