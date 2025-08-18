@@ -42,20 +42,36 @@ export default function Writing() {
               <div className="flex flex-col lg:flex-row gap-8 items-center">
                 <div className="flex gap-4 shrink-0">
                   <div className="relative group">
-                    <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center shadow-medium hover:shadow-lg transition-shadow cursor-pointer">
-                      <span className="text-muted-foreground text-xs">Professional</span>
-                    </div>
+                    <img 
+                      src="/lovable-uploads/c89f9cc9-32ac-4ed7-bfa2-6b1856f74894.png" 
+                      alt="Professional headshot" 
+                      className="w-24 h-24 rounded-lg object-cover shadow-medium hover:shadow-lg transition-shadow cursor-pointer"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors"></div>
                   </div>
                   <div className="relative group">
-                    <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center shadow-medium hover:shadow-lg transition-shadow cursor-pointer">
-                      <span className="text-muted-foreground text-xs">Casual</span>
-                    </div>
+                    <img 
+                      src="/lovable-uploads/09d913d1-2fe9-4193-ac0e-46d503d86008.png" 
+                      alt="Casual family photo" 
+                      className="w-24 h-24 rounded-lg object-cover shadow-medium hover:shadow-lg transition-shadow cursor-pointer"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors"></div>
                   </div>
                   <div className="relative group">
-                    <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center shadow-medium hover:shadow-lg transition-shadow cursor-pointer">
-                      <span className="text-muted-foreground text-xs">AI Version</span>
-                    </div>
-                    <Badge className="absolute -top-2 -right-2 text-xs bg-primary/90 text-white">AI</Badge>
+                    <img 
+                      src="/lovable-uploads/d2af25eb-578d-40b8-a114-2fe131b4e0db.png" 
+                      alt="Winter outdoor photo" 
+                      className="w-24 h-24 rounded-lg object-cover shadow-medium hover:shadow-lg transition-shadow cursor-pointer"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors"></div>
+                  </div>
+                  <div className="relative group">
+                    <img 
+                      src="/lovable-uploads/2ca0d6d3-64d7-437c-aa35-243da50437b9.png" 
+                      alt="London Eye photo" 
+                      className="w-24 h-24 rounded-lg object-cover shadow-medium hover:shadow-lg transition-shadow cursor-pointer"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors"></div>
                   </div>
                 </div>
                 <div className="text-center lg:text-left">
