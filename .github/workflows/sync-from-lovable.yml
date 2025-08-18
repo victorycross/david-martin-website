@@ -27,7 +27,12 @@ jobs:
         
     - name: Add lovable repo as remote
       run: |
-        git remote add lovable https://github.com/victorycross/david-martin-canvas.git || true
+        # Use token if available for private repo access
+        if [ -n "${{ secrets.LOVABLE_REPO_TOKEN }}" ]; then
+          git remote add lovable https://${{ secrets.LOVABLE_REPO_TOKEN }}@github.com/victorycross/david-martin-canvas.git || true
+        else
+          git remote add lovable https://github.com/victorycross/david-martin-canvas.git || true
+        fi
         git fetch lovable main
         
     - name: Check for changes
