@@ -1,0 +1,88 @@
+name: Sync from Lovable.dev
+
+on:
+  # Run on a schedule (every hour)
+  schedule:
+    - cron: '0 * * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+  # Trigger when lovable repo has changes
+  repository_dispatch:
+    types: [lovable-update]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout main website repo
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Configure Git
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+        
+    - name: Add lovable repo as remote
+      run: |
+        git remote add lovable https://github.com/victorycross/david-martin-canvas.git || true
+        git fetch lovable main
+        
+    - name: Check for changes
+      id: check_changes
+      run: |
+        # Get the latest commit from lovable repo
+        LOVABLE_COMMIT=$(git rev-parse lovable/main)
+        
+        # Check if we've already synced this commit
+        if git log --grep="Sync from lovable.dev: ${LOVABLE_COMMIT}" --oneline | grep -q .; then
+          echo "Already synced commit ${LOVABLE_COMMIT}"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "New changes detected from lovable.dev"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "lovable_commit=${LOVABLE_COMMIT}" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Sync files from lovable repo
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        # Save files we want to preserve
+        cp public/CNAME /tmp/CNAME.backup || true
+        cp .github/workflows/deploy.yml /tmp/deploy.yml.backup || true
+        cp .github/workflows/sync-from-lovable.yml /tmp/sync-from-lovable.yml.backup || true
+        
+        # Get all files from lovable repo except .git and preserved files
+        git checkout lovable/main -- . || true
+        
+        # Restore preserved files
+        mkdir -p public
+        mkdir -p .github/workflows
+        cp /tmp/CNAME.backup public/CNAME || true
+        cp /tmp/deploy.yml.backup .github/workflows/deploy.yml || true
+        cp /tmp/sync-from-lovable.yml.backup .github/workflows/sync-from-lovable.yml || true
+        
+        # Update canonical URLs to use david-martin.ca
+        if [ -f "index.html" ]; then
+          sed -i 's|https://davidmartin.dev|https://david-martin.ca|g' index.html
+        fi
+        
+        # Update package.json name if needed
+        if [ -f "package.json" ]; then
+          sed -i 's|"name": "vite_react_shadcn_ts"|"name": "david-martin-website"|g' package.json
+        fi
+        
+    - name: Commit and push changes
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git add .
+        git diff --staged --quiet || (
+          git commit -m "Sync from lovable.dev: ${{ steps.check_changes.outputs.lovable_commit }}
+          
+          Auto-synced from https://github.com/victorycross/david-martin-canvas
+          
+          🤖 Generated with GitHub Actions"
+          git push origin main
+        )
