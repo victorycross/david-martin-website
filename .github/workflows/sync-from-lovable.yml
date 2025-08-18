@@ -12,10 +12,14 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
   
 jobs:
   sync:
     runs-on: ubuntu-latest
+    outputs:
+      changes_pushed: ${{ steps.push_changes.outputs.changes_pushed }}
     
     steps:
     - name: Checkout main website repo
@@ -84,14 +88,50 @@ jobs:
         fi
         
     - name: Commit and push changes
+      id: push_changes
       if: steps.check_changes.outputs.has_changes == 'true'
       run: |
         git add .
-        git diff --staged --quiet || (
+        if ! git diff --staged --quiet; then
           git commit -m "Sync from lovable.dev: ${{ steps.check_changes.outputs.lovable_commit }}
           
           Auto-synced from https://github.com/victorycross/david-martin-canvas
           
           🤖 Generated with GitHub Actions"
           git push origin main
-        )
+          echo "changes_pushed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changes_pushed=false" >> $GITHUB_OUTPUT
+        fi
+        
+  deploy:
+    needs: sync
+    if: needs.sync.outputs.changes_pushed == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build
+      run: npm run build
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./dist
+        
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v4
