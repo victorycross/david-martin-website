@@ -20,7 +20,7 @@ export default function Writing() {
       date: "2024-12-01",
       platform: "Medium", 
       tags: ["Technology Risk", "AI Trust", "Coming Soon"],
-      link: "https://victorycross.medium.com",
+      link: "https://brightpathtech.medium.com/",
     }
   ]
 
@@ -154,7 +154,7 @@ export default function Writing() {
                   </a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="https://victorycross.medium.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://brightpathtech.medium.com/" target="_blank" rel="noopener noreferrer">
                     Follow on Medium
                   </a>
                 </Button>
