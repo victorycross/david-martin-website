@@ -2,10 +2,8 @@ import { Heart, Sunrise, Target, Zap, Clock, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 export default function YogaSection() {
-  return (
-    <Card className="overflow-hidden bg-gradient-primary text-white border-none shadow-elegant">
+  return <Card className="overflow-hidden bg-gradient-primary text-white border-none shadow-elegant">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 bg-white/20 rounded-lg">
@@ -66,10 +64,7 @@ export default function YogaSection() {
             </div>
 
             <div className="flex gap-3">
-              <Button 
-                size="lg" 
-                className="bg-white text-primary hover:bg-white/90"
-              >
+              <Button size="lg" className="text-primary bg-blue-950 hover:bg-blue-800">
                 Explore Poses
               </Button>
             </div>
@@ -135,6 +130,5 @@ export default function YogaSection() {
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
