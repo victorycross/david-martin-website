@@ -1,0 +1,140 @@
+import { Heart, Sunrise, Target, Zap, Clock, Users } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+export default function YogaSection() {
+  return (
+    <Card className="overflow-hidden bg-gradient-primary text-white border-none shadow-elegant">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-white/20 rounded-lg">
+            <Heart className="h-8 w-8" />
+          </div>
+          <div>
+            <Badge variant="secondary" className="bg-white/20 text-white border-white/30 mb-2">
+              Featured Practice
+            </Badge>
+            <CardTitle className="text-3xl font-bold">Yoga Practice</CardTitle>
+          </div>
+        </div>
+        <CardDescription className="text-white/80 text-lg">
+          Physical and spiritual practice for flexibility, strength, and inner peace
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Zap className="h-4 w-4" />
+                </div>
+                <span className="font-medium">Flexibility & Strength</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Sunrise className="h-4 w-4" />
+                </div>
+                <span className="font-medium">Morning Routines</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Target className="h-4 w-4" />
+                </div>
+                <span className="font-medium">Balance & Harmony</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-semibold">Focus</div>
+                <div className="text-white/80">Flexibility</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-semibold">Time</div>
+                <div className="text-white/80">20-60 min</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-semibold">Equipment</div>
+                <div className="text-white/80">Yoga Mat</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-semibold">Level</div>
+                <div className="text-white/80">All Levels</div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button 
+                size="lg" 
+                className="bg-white text-primary hover:bg-white/90"
+              >
+                Explore Poses
+              </Button>
+            </div>
+          </div>
+          
+          <div className="bg-white/10 rounded-lg p-6">
+            <h4 className="font-semibold mb-4 flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Practice Areas
+            </h4>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span>Morning Flow</span>
+                <span className="text-white/80">Sun Salutations</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Flexibility</span>
+                <span className="text-white/80">Deep Stretches</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Balance</span>
+                <span className="text-white/80">Standing Poses</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Restoration</span>
+                <span className="text-white/80">Gentle Flow</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Practice Description */}
+        <div className="mt-8 bg-white/5 rounded-lg p-6">
+          <h4 className="font-semibold mb-4 text-xl">My Yoga Journey</h4>
+          <div className="space-y-4 text-white/90 leading-relaxed">
+            <p>
+              Yoga has become an integral part of my wellness routine, offering both physical benefits 
+              and mental clarity. I focus on building flexibility, strength, and finding moments of 
+              peace in each practice.
+            </p>
+            
+            <div>
+              <h5 className="font-semibold mb-2">Current Practice Focus</h5>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
+                  Morning sun salutation sequences to start the day with intention
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
+                  Deep flexibility work to counteract desk work and physical training
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
+                  Balance poses to improve stability and core strength
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
+                  Restorative poses for recovery and stress relief
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

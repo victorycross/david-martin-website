@@ -5,8 +5,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container pt-20 pb-16">
         <div className="text-center max-w-4xl mx-auto mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            <span className="text-gradient font-light">Create.</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-slate-700">
+            <span className="text-gradient font-light text-slate-950">Create.</span>
             <br />
             <span className="text-gradient">Build.</span>
             <br />
