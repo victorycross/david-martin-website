@@ -1,34 +1,28 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ContactForm } from "@/components/contact-form"
-import { 
-  Building2, 
-  GraduationCap, 
-  Music, 
-  Bike, 
-  Hammer,
-  Brain,
-  Shield,
-  Mail,
-  MapPin
-} from "lucide-react"
-
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ContactForm } from "@/components/contact-form";
+import { Building2, GraduationCap, Music, Bike, Hammer, Brain, Shield, Mail, MapPin } from "lucide-react";
 export default function About() {
-  const skills = [
-    "AI Governance", "Technology Risk", "Financial Services", "Regulatory Compliance",
-    "React", "TypeScript", "Python", "Node.js", "AWS", "System Design"
-  ]
-
-  const interests = [
-    { icon: <Music className="h-5 w-5" />, label: "Music Production", description: "Piano and guitar compositions" },
-    { icon: <Bike className="h-5 w-5" />, label: "Motorcycles", description: "Weekend touring and maintenance" },
-    { icon: <Hammer className="h-5 w-5" />, label: "Woodworking", description: "Furniture and artistic pieces" },
-    { icon: <Brain className="h-5 w-5" />, label: "AI Research", description: "Following latest developments" },
-  ]
-
-  return (
-    <div className="min-h-screen">
+  const skills = ["AI Governance", "Technology Risk", "Financial Services", "Regulatory Compliance", "React", "TypeScript", "Python", "Node.js", "AWS", "System Design"];
+  const interests = [{
+    icon: <Music className="h-5 w-5" />,
+    label: "Music Production",
+    description: "Piano and guitar compositions"
+  }, {
+    icon: <Bike className="h-5 w-5" />,
+    label: "Motorcycles",
+    description: "Weekend touring and maintenance"
+  }, {
+    icon: <Hammer className="h-5 w-5" />,
+    label: "Woodworking",
+    description: "Furniture and artistic pieces"
+  }, {
+    icon: <Brain className="h-5 w-5" />,
+    label: "AI Research",
+    description: "Following latest developments"
+  }];
+  return <div className="min-h-screen">
       <div className="container py-12">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -58,11 +52,11 @@ export default function About() {
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>Based in [Location]</span>
+                    <span>Based in Toronto, Ontario Canada</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Shield className="h-4 w-4 text-muted-foreground" />
-                    <span>AI Governance Specialist</span>
+                    <span>Tech and AI Governance Leader</span>
                   </div>
                 </div>
 
@@ -87,11 +81,7 @@ export default function About() {
                   across national security and financial services sectors. My work focuses on helping organizations navigate 
                   the complex regulatory landscape while implementing innovative AI solutions responsibly.
                 </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  I bring a unique perspective that combines technical expertise with national security insight and regulatory knowledge, 
-                  ensuring that cutting-edge technology deployments meet both security objectives and 
-                  compliance requirements.
-                </p>
+                <p className="text-muted-foreground leading-relaxed">I bring a unique perspective that combines technical expertise from my experience as a former ciso, insight and regulatory knowledge, ensuring that cutting-edge technology deployments meet both security objectives and compliance requirements.</p>
               </Card>
 
               {/* Skills */}
@@ -101,11 +91,9 @@ export default function About() {
                   <h3 className="text-xl font-semibold">Skills & Expertise</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <Badge key={skill} variant="secondary" className="text-sm">
+                  {skills.map(skill => <Badge key={skill} variant="secondary" className="text-sm">
                       {skill}
-                    </Badge>
-                  ))}
+                    </Badge>)}
                 </div>
               </Card>
 
@@ -116,8 +104,7 @@ export default function About() {
                   <h3 className="text-xl font-semibold">Personal Interests</h3>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {interests.map((interest, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  {interests.map((interest, index) => <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                       <div className="text-primary mt-1">
                         {interest.icon}
                       </div>
@@ -125,8 +112,7 @@ export default function About() {
                         <h4 className="font-medium">{interest.label}</h4>
                         <p className="text-sm text-muted-foreground">{interest.description}</p>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </Card>
 
@@ -146,6 +132,5 @@ export default function About() {
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>;
 }
