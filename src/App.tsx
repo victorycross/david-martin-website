@@ -9,7 +9,8 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import Home from "./pages/Home";
 import Writing from "./pages/Writing";
 import Creative from "./pages/Creative";
-import Applications from "./pages/Applications";
+import Technology from "./pages/Technology";
+import AI from "./pages/AI";
 import Health from "./pages/Health";
 import About from "./pages/About";
 import Socials from "./pages/Socials";
@@ -41,17 +42,18 @@ const AppContent = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <Routes>
-        <Route path="/" element={<Home />} />
-            <Route path="/writing" element={<Writing />} />
-            <Route path="/creative" element={<Creative />} />
-            <Route path="/applications" element={<Applications />} />
-            <Route path="/health" element={<Health />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/socials" element={<Socials />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="*" element={<NotFound />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+              <Route path="/writing" element={<Writing />} />
+              <Route path="/creative" element={<Creative />} />
+              <Route path="/technology" element={<Technology />} />
+              <Route path="/ai" element={<AI />} />
+              <Route path="/health" element={<Health />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/socials" element={<Socials />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="*" element={<NotFound />} />
+        </Routes>
     </div>
   );
 };

@@ -22,7 +22,7 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <HeroPanel title="Create" description="Explore my creative journey through music, visual art, and innovative projects that blend technology with artistic expression." icon={<Palette className="h-8 w-8 text-white" />} href="/creative" gradient="bg-gradient-primary" />
           
-          <HeroPanel title="Build" description="Discover applications I've developed for crisis management, exception tracking, and AI-powered tools that solve real-world problems." icon={<Code className="h-8 w-8 text-white" />} href="/applications" gradient="bg-accent" />
+          <HeroPanel title="Build" description="Discover applications, AI tools, technology risk frameworks, and practical AI prompts that solve real-world problems and drive informed decision-making." icon={<Code className="h-8 w-8 text-white" />} href="/technology" gradient="bg-accent" />
           
           <HeroPanel title="Write" description="Read my thoughts on technology risk, AI governance, and insights from my work in financial services and beyond." icon={<PenTool className="h-8 w-8 text-white" />} href="/writing" gradient="bg-success" />
         </div>
