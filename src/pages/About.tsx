@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ContactForm } from "@/components/contact-form"
 import { 
   Building2, 
   GraduationCap, 
@@ -66,10 +67,9 @@ export default function About() {
                 </div>
 
                 <div className="mt-6 pt-6 border-t">
-                  <Button className="w-full" variant="secondary">
-                    <Mail className="mr-2 h-4 w-4" />
-                    Get in Touch
-                  </Button>
+                  <p className="text-sm text-muted-foreground text-center">
+                    Use the contact form to reach out securely
+                  </p>
                 </div>
               </Card>
             </div>
@@ -139,6 +139,9 @@ export default function About() {
                   build solutions that are both cutting-edge and responsible."
                 </blockquote>
               </Card>
+
+              {/* Contact Form */}
+              <ContactForm />
             </div>
           </div>
         </div>
