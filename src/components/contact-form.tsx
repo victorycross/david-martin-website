@@ -33,8 +33,11 @@ export function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
+    console.log('Form submission started with data:', formData)
+
     try {
-      const response = await fetch('/functions/v1/contact', {
+      console.log('Calling edge function at:', 'https://getnwxzthubdrallsmtf.supabase.co/functions/v1/contact')
+      const response = await fetch('https://getnwxzthubdrallsmtf.supabase.co/functions/v1/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,8 +45,13 @@ export function ContactForm() {
         body: JSON.stringify(formData),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
+
       if (!response.ok) {
-        throw new Error('Failed to send message')
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
+        throw new Error(`Failed to send message: ${response.status} - ${errorText}`)
       }
 
       toast({

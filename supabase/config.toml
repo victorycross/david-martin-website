@@ -1,1 +1,4 @@
 project_id = "getnwxzthubdrallsmtf"
+
+[functions.contact]
+verify_jwt = false

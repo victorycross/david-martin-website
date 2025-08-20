@@ -127,7 +127,7 @@ export default function About() {
               </Card>
 
               {/* Contact Form */}
-              <ContactForm />
+              {/* Contact form moved to main page */}
             </div>
           </div>
         </div>

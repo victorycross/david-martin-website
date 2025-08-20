@@ -1,5 +1,6 @@
 import { Code, Palette, PenTool } from "lucide-react";
 import { HeroPanel } from "@/components/hero-panel";
+import { ContactForm } from "@/components/contact-form";
 export default function Home() {
   return <div className="min-h-screen bg-gradient-hero">
       {/* Hero Section */}
@@ -44,6 +45,13 @@ export default function Home() {
               <p className="text-muted-foreground">Music enthusiast, vespa and motorcycle rider, and woodworking enthusiast.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="container pb-20">
+        <div className="max-w-2xl mx-auto">
+          <ContactForm />
         </div>
       </section>
     </div>;
