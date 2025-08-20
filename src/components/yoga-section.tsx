@@ -21,6 +21,30 @@ export default function YogaSection() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Breathe Studio Highlight */}
+        <div className="bg-white/10 rounded-lg p-6 mb-8">
+          <h4 className="font-semibold mb-4 text-xl flex items-center gap-2">
+            <Heart className="h-5 w-5" />
+            My Studio: Breathe Yoga Toronto
+          </h4>
+          <div className="space-y-3 text-white/90 leading-relaxed">
+            <p>
+              I practice regularly at <span className="font-semibold text-white">Breathe Yoga Studio</span> in Toronto, 
+              where I've found my home in their "Yoga for Stiff Men" classes. This specialized program is 
+              perfectly designed for those of us who need extra attention to flexibility and mobility.
+            </p>
+            <div className="flex gap-3 mt-4">
+              <Button 
+                size="sm" 
+                className="text-primary bg-blue-950 hover:bg-blue-800"
+                onClick={() => window.open('https://breatheyogastudio.com/', '_blank')}
+              >
+                Visit Breathe Studio
+              </Button>
+            </div>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
             <div className="space-y-4 mb-6">
@@ -98,32 +122,32 @@ export default function YogaSection() {
         
         {/* Practice Description */}
         <div className="mt-8 bg-white/5 rounded-lg p-6">
-          <h4 className="font-semibold mb-4 text-xl">My Yoga Journey</h4>
+          <h4 className="font-semibold mb-4 text-xl">Current Practice Focus</h4>
           <div className="space-y-4 text-white/90 leading-relaxed">
             <p>
               Yoga has become an integral part of my wellness routine, offering both physical benefits 
-              and mental clarity. I focus on building flexibility, strength, and finding moments of 
-              peace in each practice.
+              and mental clarity. The specialized "Yoga for Stiff Men" program perfectly complements 
+              my strength training and helps counteract the effects of desk work.
             </p>
             
             <div>
-              <h5 className="font-semibold mb-2">Current Practice Focus</h5>
+              <h5 className="font-semibold mb-2">Training Areas</h5>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  Morning sun salutation sequences to start the day with intention
+                  Targeted flexibility work for tight hips, shoulders, and hamstrings
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  Deep flexibility work to counteract desk work and physical training
+                  Strength-building poses that complement kettlebell training
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  Balance poses to improve stability and core strength
+                  Mobility sequences to counteract desk work and physical training
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  Restorative poses for recovery and stress relief
+                  Breathing techniques for stress relief and mental clarity
                 </li>
               </ul>
             </div>
