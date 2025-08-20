@@ -2,10 +2,8 @@ import { ExternalLink, Dumbbell, TrendingUp, Flame, Zap, Target } from "lucide-r
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 export default function KettlebellSection() {
-  return (
-    <Card className="overflow-hidden bg-gradient-primary text-white border-none shadow-elegant">
+  return <Card className="overflow-hidden bg-gradient-primary text-white border-none shadow-elegant">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 bg-white/20 rounded-lg">
@@ -66,33 +64,14 @@ export default function KettlebellSection() {
             </div>
 
             <div className="flex gap-3">
-              <Button 
-                asChild 
-                size="lg" 
-                className="bg-white text-primary hover:bg-white/90"
-              >
-                <a 
-                  href="https://kettlebell9.netlify.app" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="gap-2"
-                >
+              <Button asChild size="lg" className="text-primary bg-blue-950 hover:bg-blue-800">
+                <a href="https://kettlebell9.netlify.app" target="_blank" rel="noopener noreferrer" className="gap-2">
                   Start Program
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </Button>
-              <Button 
-                asChild 
-                variant="outline" 
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10"
-              >
-                <a 
-                  href="https://github.com/victorycross/Kettlebell9" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="gap-2"
-                >
+              <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+                <a href="https://github.com/victorycross/Kettlebell9" target="_blank" rel="noopener noreferrer" className="gap-2">
                   View Code
                   <ExternalLink className="h-4 w-4" />
                 </a>
@@ -184,6 +163,5 @@ export default function KettlebellSection() {
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }

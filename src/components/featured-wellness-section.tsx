@@ -5,11 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import MeditationSection from "./meditation-section";
 import YogaSection from "./yoga-section";
 import KettlebellSection from "./kettlebell-section";
+import TechGadgetsSection from "./tech-gadgets-section";
 
 const wellnessSections = [
   { id: 'kettlebell', name: 'Kettlebell', component: KettlebellSection },
   { id: 'meditation', name: 'Meditation', component: MeditationSection },
-  { id: 'yoga', name: 'Yoga', component: YogaSection }
+  { id: 'yoga', name: 'Yoga', component: YogaSection },
+  { id: 'tech', name: 'Tech Gadgets', component: TechGadgetsSection }
 ];
 
 export default function FeaturedWellnessSection() {
