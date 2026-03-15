@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-Day Kettlebell Fat Crusher Program</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 40px;
+            min-height: 100vh;
+            position: relative;
+            background: #ffffff;
+            color: #2c3e50;
+            animation: slideIn 0.5s ease-in-out;
+            border-left: 6px solid #3498db;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide.day1 { border-left-color: #e74c3c; }
+        .slide.day2 { border-left-color: #f39c12; }
+        .slide.day3 { border-left-color: #27ae60; }
+        .slide.day4 { border-left-color: #3498db; }
+        .slide.day5 { border-left-color: #9b59b6; }
+        .slide.day6 { border-left-color: #1abc9c; }
+        .slide.day7 { border-left-color: #e67e22; }
+        .slide.day8 { border-left-color: #2ecc71; }
+        .slide.day9 { border-left-color: #8e44ad; }
+        .slide.title { border-left-color: #34495e; }
+        .slide.overview { border-left-color: #3498db; }
+        .slide.nutrition { border-left-color: #27ae60; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: #34495e;
+            border-bottom: 3px solid #ecf0f1;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .workout-block {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .exercise-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .exercise-list li {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 16px 24px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            font-size: 1.1em;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .exercise-list li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+            border-left-color: #2980b9;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            background: #34495e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+        }
+
+        .title-slide h1 {
+            font-size: 4em;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-size: 1.6em;
+            margin-bottom: 40px;
+            color: #34495e;
+            font-weight: 400;
+        }
+
+        .kettlebell-icon {
+            font-size: 5em;
+            margin: 30px 0;
+            animation: swing 3s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .overview-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .rest-note {
+            background: #fff3cd;
+            border-left: 4px solid #f0ad4e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #856404;
+        }
+
+        .nutrition-highlight {
+            background: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #155724;
+        }
+
+        .day-number {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            background: #3498db;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .equipment-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .equipment-item {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin: 10px;
+            text-align: center;
+            min-width: 160px;
+            border: 2px solid #e9ecef;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .feature-highlight h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .completion-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .avoid-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .avoid-item {
+            background: #fff5f5;
+            border: 2px solid #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #c0392b;
+        }
+
+        .form-guide {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .form-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-card h4 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .form-card ul {
+            list-style: disc;
+            margin-left: 20px;
+            color: #2c3e50;
+        }
+
+        .safety-warning {
+            background: #fff3cd;
+            border: 2px solid #f0ad4e;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+            color: #856404;
+        }
+
+        .safety-warning h3 {
+            color: #d68910;
+            margin-bottom: 15px;
+        }
+
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .progression-card {
+            background: #ffffff;
+            border: 2px solid #27ae60;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .progression-card:hover {
+            background: #27ae60;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            h2 {
+                font-size: 1.8em;
+            }
+            
+            .navigation {
+                bottom: 15px;
+            }
+            
+            .nav-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+
+            .form-grid,
+            .progression-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .avoid-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+
+    <!-- Title Slide -->
+    <div class="slide active title">
+        <div class="slide-counter">1 / 14</div>
+        <div class="title-slide">
+            <div class="kettlebell-icon">🏋️</div>
+            <h1>9-DAY KETTLEBELL</h1>
+            <h1>FAT CRUSHER</h1>
+            <div class="subtitle">Transform Your Body in Just 9 Days</div>
+            <div style="font-size: 1.2em; margin-top: 40px; color: #34495e;">
+                🔥 High-Intensity Workouts<br>
+                💪 Strength & Conditioning<br>
+                ⚡ Maximum Fat Burn
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Slide -->
+    <div class="slide overview">
+        <div class="slide-counter">2 / 14</div>
+        <h1>Program Overview</h1>
+        
+        <div class="overview-grid">
+            <div class="overview-card">
+                <h3>🎯 Program Goals</h3>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Accelerated fat loss</li>
+                    <li>Increased strength</li>
+                    <li>Enhanced conditioning</li>
+                    <li>Improved mobility</li>
+                </ul>
+            </div>
+            
+            <div class="overview-card">
+                <h3>⏱️ Time Commitment</h3>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>9 consecutive days</li>
+                    <li>30-45 minutes per session</li>
+                    <li>1 active recovery day</li>
+                    <li>Progressive intensity</li>
+                </ul>
+            </div>
+            
+            <div class="overview-card">
+                <h3>🏋️ Equipment Needed</h3>
+                <div class="equipment-list">
+                    <div class="equipment-item">25lb Kettlebell</div>
+                    <div class="equipment-item">15lb Kettlebell</div>
+                    <div class="equipment-item">Dumbbells</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="workout-block">
+            <h3>📅 Program Structure</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
+                <div class="stat-card">
+                    <strong>Days 1, 3, 4</strong><br>Strength Circuits
+                </div>
+                <div class="stat-card">
+                    <strong>Day 2</strong><br>EMOM Training
+                </div>
+                <div class="stat-card">
+                    <strong>Day 5</strong><br>Active Recovery
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 1 -->
+    <div class="slide day1">
+        <div class="slide-counter">3 / 14</div>
+        <div class="day-number">1</div>
+        <h1>Day 1: Goblet Foundation</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Goblet Clean x 8 reps + 10-sec rack hold + 3 Goblet Squats</li>
+                <li>Goblet Clean x 5 reps + 10-sec rack hold + 5 Goblet Squats</li>
+                <li>Goblet Clean x 3 reps + 10-sec rack hold + 8 Goblet Squats</li>
+            </ul>
+            <div class="rest-note">Rest 60-90 seconds between rounds</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 2-3 Rounds</h3>
+            <ul class="exercise-list">
+                <li>KB Thrusters x 20 seconds (25lb)</li>
+                <li>Heavy Pants x 8 reps (15lb x 2 dumbbells)</li>
+                <li>KB Thrusters x 20 seconds (25lb)</li>
+                <li>Heavy Pants x 6 reps (15lb x 2 dumbbells)</li>
+                <li>KB Thrusters x 20 seconds (25lb)</li>
+                <li>Heavy Pants x 4 reps (15lb x 2 dumbbells)</li>
+            </ul>
+            <div class="rest-note">Rest 90 seconds between rounds</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - 1 Round (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Kettlebell Swing x 8</li>
+                <li>Goblet Clean to Press Up x 6</li>
+                <li>Goblet Split Squat x 4 per side</li>
+                <li>Plank Drag Dumbbell (15lb) x 3</li>
+                <li>Push Up x 2</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="slide day2">
+        <div class="slide-counter">4 / 14</div>
+        <div class="day-number">2</div>
+        <h1>Day 2: EMOM Metabolic Blast</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 3 x 5-minute EMOM</h3>
+            <ul class="exercise-list">
+                <li><strong>Minute 1:</strong> Dumbbell Overhead Press x 8 reps (2 x 15lb)</li>
+                <li><strong>Minute 2:</strong> Dumbbell Overhead Push Press x 6 reps (2 x 20lb)</li>
+                <li><strong>Minute 3:</strong> Push-ups x 20 seconds</li>
+                <li><strong>Minutes 4-5:</strong> Rest</li>
+            </ul>
+            <div class="rest-note">Complete 3 full cycles</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 3 x 5-minute EMOM</h3>
+            <ul class="exercise-list">
+                <li><strong>Minute 1:</strong> Heavy Pants x 8 (2 x 25lb)</li>
+                <li><strong>Minute 2:</strong> Swing x 10 reps (25lb)</li>
+                <li><strong>Minute 3:</strong> Goblet Squat Jumps x 15 seconds (15lb)</li>
+                <li><strong>Minutes 4-5:</strong> Rest</li>
+            </ul>
+            <div class="rest-note">Complete 3 full cycles</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - 2 x 5-minute EMOM</h3>
+            <ul class="exercise-list">
+                <li><strong>Minute 1:</strong> Mountain Climbers x 20 seconds</li>
+                <li><strong>Minute 2:</strong> Hard-style Plank x 20 seconds</li>
+                <li><strong>Minutes 3-5:</strong> Rest</li>
+            </ul>
+            <div class="rest-note">Complete 2 full cycles</div>
+        </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="slide day3">
+        <div class="slide-counter">5 / 14</div>
+        <div class="day-number">3</div>
+        <h1>Day 3: Progressive Strength Ladder</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Swings x 10/15/25/50 (ascending ladder)</li>
+            </ul>
+            <div class="rest-note">Rest as needed between sets</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - Reps 1/2/3/5 x 2 Rounds (25lb KB)</h3>
+            <div class="nutrition-highlight">
+                <strong>Round 1:</strong> Goblet Squat → Push-ups<br>
+                <strong>Round 2:</strong> Goblet Squat → KB Dead Lift → Push-ups<br>
+                <strong>Round 3:</strong> Goblet Squat → Horn Press → KB Dead Lift → Push-ups<br>
+                <strong>Round 4:</strong> Goblet Squat → Upright Row → Horn Press → KB Dead Lift → Push-ups
+            </div>
+            <div class="rest-note">Perform each exercise for 1, 2, 3, then 5 reps in sequence</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Finishing Swings x 10/15/25/50</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="slide day4">
+        <div class="slide-counter">6 / 14</div>
+        <div class="day-number">4</div>
+        <h1>Day 4: Compound Strength</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 3 Rounds</h3>
+            <ul class="exercise-list">
+                <li>Goblet Squat x 10 reps (25lb)</li>
+                <li>Goblet Rack Hold x 30 seconds</li>
+                <li>Farmers Walk x 30 seconds (2 x 25lb)</li>
+                <li>Plank x 30 seconds</li>
+            </ul>
+            <div class="rest-note">Rest 60 seconds between rounds</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 2 Rounds</h3>
+            <ul class="exercise-list">
+                <li>Swings x 10 (25lb)</li>
+                <li>Heavy Pants x 8 (2 x 25lb)</li>
+                <li>KB Sumo Dead Lift x 6 (2 x 25lb)</li>
+            </ul>
+            <div class="rest-note">Rest 90 seconds between rounds</div>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - Endurance Finisher (15lb KB)</h3>
+            <ul class="exercise-list">
+                <li>KB Thrusters: 15 seconds work + 15 seconds rest for 15 minutes</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 5 -->
+    <div class="slide day5">
+        <div class="slide-counter">7 / 14</div>
+        <div class="day-number">5</div>
+        <h1>Day 5: Active Recovery</h1>
+        
+        <div style="text-align: center; margin: 50px 0;">
+            <div class="kettlebell-icon" style="font-size: 4em;">🧘‍♀️</div>
+            <h2 style="margin: 30px 0;">Choose Your Recovery Activity</h2>
+        </div>
+        
+        <div class="overview-grid">
+            <div class="overview-card">
+                <h3>🚶‍♀️ Long Walk</h3>
+                <p>30-45 minutes at comfortable pace</p>
+                <p>Fresh air and gentle movement</p>
+            </div>
+            
+            <div class="overview-card">
+                <h3>🧘 Yoga</h3>
+                <p>20-30 minutes gentle flow</p>
+                <p>Focus on flexibility and breathing</p>
+            </div>
+            
+            <div class="overview-card">
+                <h3>🤸‍♀️ Light Movement</h3>
+                <p>Mobility work and stretching</p>
+                <p>Target tight areas</p>
+            </div>
+            
+            <div class="overview-card">
+                <h3>🎯 Band Work</h3>
+                <p>Light resistance exercises</p>
+                <p>Activation and recovery</p>
+            </div>
+        </div>
+        
+        <div class="nutrition-highlight">
+            <h3>Recovery Day Focus</h3>
+            <p>Today is about allowing your body to recover while staying active. Choose activities that feel good and help you prepare for the remaining days of the program.</p>
+        </div>
+    </div>
+
+    <!-- Day 6 -->
+    <div class="slide day6">
+        <div class="slide-counter">8 / 14</div>
+        <div class="day-number">6</div>
+        <h1>Day 6: Return to Strength</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Goblet Clean x 10 reps + 20-sec hold + 3 Goblet Squats</li>
+                <li>Goblet Clean x 8 reps + 20-sec hold + 5 Goblet Squats</li>
+                <li>Goblet Clean x 3 reps + 20-sec hold + 8 Goblet Squats</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 2 Rounds</h3>
+            <ul class="exercise-list">
+                <li>KB Thrusters x 20 seconds (25lb)</li>
+                <li>Heavy Pants x 8 (2 x 25lb)</li>
+                <li>KB Thrusters x 20 seconds</li>
+                <li>Heavy Pants x 6</li>
+                <li>KB Thrusters x 20 seconds</li>
+                <li>Heavy Pants x 4</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - 1 Round (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Swing x 8</li>
+                <li>Goblet Clean to Press x 6</li>
+                <li>Goblet Split Squat x 4/side</li>
+                <li>Plank Drag x 3</li>
+                <li>Push Up x 2</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 7 -->
+    <div class="slide day7">
+        <div class="slide-counter">9 / 14</div>
+        <div class="day-number">7</div>
+        <h1>Day 7: Power Development</h1>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Swing Pyramid x 10/15/25/50</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 2 Rounds</h3>
+            <ul class="exercise-list">
+                <li>KB Thrusters x 20 seconds (25lb)</li>
+                <li>Heavy Pants x 8 (2 x 25lb)</li>
+                <li>KB Thrusters x 20 seconds</li>
+                <li>Heavy Pants x 6</li>
+                <li>KB Thrusters x 20 seconds</li>
+                <li>Heavy Pants x 4</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - 1 Round (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Swing x 8</li>
+                <li>Goblet Clean to Press x 6</li>
+                <li>Goblet Split Squat x 4/side</li>
+                <li>Plank Drag x 3</li>
+                <li>Push Up x 2</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 8 -->
+    <div class="slide day8">
+        <div class="slide-counter">10 / 14</div>
+        <div class="day-number">8</div>
+        <h1>Day 8: Half Fast Integration</h1>
+        
+        <div style="text-align: center; margin: 50px 0;">
+            <div class="kettlebell-icon" style="font-size: 4em;">🥤</div>
+            <h2 style="margin: 30px 0;">Modified Training Day</h2>
+        </div>
+        
+        <div class="workout-block">
+            <h3>Block 1 - Morning Protocol</h3>
+            <ul class="exercise-list">
+                <li>Post-workout shake (within 30 minutes)</li>
+                <li>Light movement and stretching</li>
+                <li>Hydration focus (100+ ounces water)</li>
+            </ul>
+        </div>
+
+        <div class="nutrition-highlight">
+            <h3>🍽️ Nutrition Focus</h3>
+            <p><strong>Today's Meal Plan:</strong></p>
+            <ul style="margin-top: 15px;">
+                <li>Post-workout shake</li>
+                <li>One whole foods meal</li>
+                <li>Extended fasting period</li>
+                <li>Quality sleep preparation</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Recovery Emphasis</h3>
+            <ul class="exercise-list">
+                <li>Gentle mobility work</li>
+                <li>Breathing exercises</li>
+                <li>Prepare for final day</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Day 9 -->
+    <div class="slide day9">
+        <div class="slide-counter">11 / 14</div>
+        <div class="day-number">9</div>
+        <h1>Day 9: Program Completion</h1>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <div class="kettlebell-icon" style="font-size: 4em;">🏆</div>
+            <h2 style="margin: 20px 0; color: #27ae60;">Final Challenge Day!</h2>
+        </div>
+        
+        <div class="workout-block">
+            <h3>Block 1 - 2 Rounds (25lb KB)</h3>
+            <ul class="exercise-list">
+                <li>Final Goblet Clean Complex (all variations)</li>
+                <li>Demonstrate mastery of technique</li>
+                <li>Focus on form and power</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 2 - 2 Rounds</h3>
+            <ul class="exercise-list">
+                <li>Metabolic finisher circuit</li>
+                <li>Combine all major movement patterns</li>
+                <li>Push your limits safely</li>
+            </ul>
+        </div>
+
+        <div class="workout-block">
+            <h3>Block 3 - Celebration Circuit</h3>
+            <ul class="exercise-list">
+                <li>Complete program review</li>
+                <li>Test all major movements</li>
+                <li>Celebrate your achievement! 🎉</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Nutrition Guidelines -->
+    <div class="slide nutrition">
+        <div class="slide-counter">12 / 14</div>
+        <h1>🥗 Nutrition Guidelines</h1>
+        
+        <div class="workout-block">
+            <h3>Daily Protocol</h3>
+            <ul class="exercise-list">
+                <li><strong>Upon Waking:</strong> Black coffee/tea with coconut oil (optional)</li>
+                <li><strong>Post-Workout:</strong> Protein shake within 30 minutes</li>
+                <li><strong>Hydration:</strong> 100+ ounces water daily</li>
+                <li><strong>Sleep:</strong> Prioritize 7-9 hours quality sleep</li>
+            </ul>
+        </div>
+
+        <div class="nutrition-highlight">
+            <h3>🚫 Avoid These</h3>
+            <div class="avoid-grid">
+                <div class="avoid-item">
+                    <strong>❌ Alcohol</strong>
+                </div>
+                <div class="avoid-item">
+                    <strong>❌ Added Sugars</strong>
+                </div>
+                <div class="avoid-item">
+                    <strong>❌ "White" Carbs</strong>
+                </div>
+                <div class="avoid-item">
+                    <strong>❌ Excessive Snacking</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="workout-block">
+            <h3>📅 Meal Planning by Day</h3>
+            <div class="nutrition-highlight">
+                <p><strong>Days 1-2, 4, 6-7, 9:</strong> 2 shakes + 1 whole foods meal</p>
+                <p><strong>Days 3, 8:</strong> Modified fasting with shake + whole foods meal</p>
+                <p><strong>Day 5:</strong> 3 whole foods meals + 1 post-workout shake</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Form Guide -->
+    <div class="slide form-guide">
+        <div class="slide-counter">13 / 14</div>
+        <h1>🎯 Exercise Form Guide</h1>
+        
+        <div class="workout-block">
+            <h3>Key Movement Patterns</h3>
+            
+            <div class="form-grid">
+                <div class="form-card">
+                    <h4>🏋️ Goblet Clean</h4>
+                    <ul>
+                        <li>Start with KB between legs</li>
+                        <li>Explosive hip drive</li>
+                        <li>Catch in goblet position</li>
+                        <li>Control the descent</li>
+                    </ul>
+                </div>
+                
+                <div class="form-card">
+                    <h4>🏋️ Goblet Squat</h4>
+                    <ul>
+                        <li>Hold KB at chest level</li>
+                        <li>Feet shoulder-width apart</li>
+                        <li>Descend until thighs parallel</li>
+                        <li>Drive through heels</li>
+                    </ul>
+                </div>
+                
+                <div class="form-card">
+                    <h4>🏋️ KB Swing</h4>
+                    <ul>
+                        <li>Hip hinge movement</li>
+                        <li>Explosive hip extension</li>
+                        <li>KB reaches chest height</li>
+                        <li>Control the descent</li>
+                    </ul>
+                </div>
+                
+                <div class="form-card">
+                    <h4>🏋️ Thrusters</h4>
+                    <ul>
+                        <li>Goblet squat + overhead press</li>
+                        <li>Fluid transition</li>
+                        <li>Full extension overhead</li>
+                        <li>Control the descent</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="safety-warning">
+            <h3>⚠️ Safety Notes</h3>
+            <p>• Warm up thoroughly before each session<br>
+            • Scale weights based on your fitness level<br>
+            • Stop if you experience pain or excessive fatigue<br>
+            • Consult healthcare provider before starting</p>
+        </div>
+    </div>
+
+    <!-- Completion & Progression -->
+    <div class="slide">
+        <div class="slide-counter">14 / 14</div>
+        <div class="title-slide">
+            <div class="kettlebell-icon" style="font-size: 4em;">🏆</div>
+            <h1>Congratulations!</h1>
+            <div class="subtitle">You've Completed the 9-Day Fat Crusher!</div>
+            
+            <div class="workout-block" style="margin-top: 40px;">
+                <h3>🚀 What's Next? Program Progression</h3>
+                <div class="progression-grid">
+                    <div class="progression-card">
+                        <h4>Week 1</h4>
+                        <p>Complete as written with 25lb KB</p>
+                    </div>
+                    <div class="progression-card">
+                        <h4>Week 2</h4>
+                        <p>Increase to 35lb KB for main movements</p>
+                    </div>
+                    <div class="progression-card">
+                        <h4>Week 3</h4>
+                        <p>Add additional rounds or increase work intervals</p>
+                    </div>
+                    <div class="progression-card">
+                        <h4>Week 4</h4>
+                        <p>Combine with other training modalities</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; font-size: 1.3em; color: #34495e;">
+                <p>🔥 You've built strength, burned fat, and improved conditioning!</p>
+                <p>💪 Keep up the momentum with your next fitness challenge!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navigation">
+    <button class="nav-btn" onclick="changeSlide(-1)">← Previous</button>
+    <button class="nav-btn" onclick="changeSlide(1)">Next →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        
+        // Update slide counter
+        const counter = slides[currentSlide].querySelector('.slide-counter');
+        if (counter) {
+            counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') changeSlide(-1);
+        if (e.key === 'ArrowRight') changeSlide(1);
+    });
+
+    // Touch/swipe navigation for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) changeSlide(1);  // Swipe left
+        if (touchEndX - touchStartX > 50) changeSlide(-1); // Swipe right
+    });
+
+    // Auto-advance option (uncomment to enable)
+    // setInterval(() => changeSlide(1), 10000); // Auto-advance every 10 seconds
+</script>
+
+</body>
+</html>
