@@ -1,9 +1,9 @@
+/* David Martin Portfolio Design System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Lora:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* David Martin Portfolio Design System */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 @layer base {
   :root {
@@ -180,4 +180,423 @@
   .glass-dark {
     @apply backdrop-blur-sm bg-black/10 border border-white/10;
   }
+}/* ===== Family Reunion RSVP — Warm Invitation Theme ===== */
+
+.reunion-page {
+  background: #1a1612;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(180, 130, 60, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(140, 90, 40, 0.06) 0%, transparent 60%);
+  color: #e8ddd0;
+  position: relative;
+  overflow: hidden;
+}
+
+.reunion-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+.reunion-title {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+  font-weight: 500;
+  color: #f0e6d8;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.reunion-subtitle {
+  font-family: 'Lora', 'Inter', sans-serif;
+  font-weight: 400;
+  color: #b8956a;
+  letter-spacing: 0.2em;
+}
+
+.reunion-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  color: #f0e6d8;
+}
+
+.reunion-body {
+  font-family: 'Lora', 'Inter', sans-serif;
+  font-weight: 400;
+  color: #d4c4b0;
+}
+
+.reunion-label {
+  font-family: 'Lora', sans-serif;
+  font-weight: 500;
+  color: #b8956a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+}
+
+.reunion-flourish {
+  font-size: 2rem;
+  color: #b8956a;
+  opacity: 0.6;
+  animation: reunionFadeIn 1s ease-out;
+}
+
+.reunion-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(184, 149, 106, 0.15);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.reunion-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(184, 149, 106, 0.2) !important;
+  color: #f0e6d8 !important;
+  font-family: 'Lora', sans-serif !important;
+  border-radius: 0.5rem !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reunion-input:focus {
+  border-color: rgba(184, 149, 106, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(184, 149, 106, 0.1) !important;
+  outline: none !important;
+}
+
+.reunion-input::placeholder {
+  color: rgba(184, 149, 106, 0.35) !important;
+}
+
+.reunion-radio {
+  border-color: rgba(184, 149, 106, 0.3) !important;
+}
+
+.reunion-radio[data-state="checked"] {
+  background: #b8956a !important;
+  border-color: #b8956a !important;
+  color: #1a1612 !important;
+}
+
+.reunion-select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(184, 149, 106, 0.2) !important;
+  color: #f0e6d8 !important;
+  font-family: 'Lora', sans-serif !important;
+  font-size: 0.8rem !important;
+  border-radius: 0.5rem !important;
+}
+
+.reunion-select:focus,
+.reunion-select[data-state="open"] {
+  border-color: rgba(184, 149, 106, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(184, 149, 106, 0.1) !important;
+}
+
+.reunion-select-content {
+  background: #252019 !important;
+  border: 1px solid rgba(184, 149, 106, 0.2) !important;
+  border-radius: 0.5rem !important;
+  color: #e8ddd0 !important;
+  font-family: 'Lora', sans-serif !important;
+}
+
+.reunion-select-item {
+  font-family: 'Lora', sans-serif !important;
+  font-size: 0.8rem !important;
+  color: #d4c4b0 !important;
+}
+
+.reunion-select-item[data-highlighted] {
+  background: rgba(184, 149, 106, 0.15) !important;
+  color: #f0e6d8 !important;
+}
+
+.reunion-button {
+  background: linear-gradient(135deg, #b8956a, #9a7a52) !important;
+  color: #1a1612 !important;
+  font-family: 'Cormorant Garamond', serif !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  letter-spacing: 0.05em !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem 1.5rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.reunion-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c9a67b, #ab8b63) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184, 149, 106, 0.25);
+}
+
+.reunion-button:disabled {
+  opacity: 0.4 !important;
+}
+
+.reunion-button-outline {
+  background: transparent !important;
+  color: #b8956a !important;
+  border: 1px solid rgba(184, 149, 106, 0.3) !important;
+  font-family: 'Cormorant Garamond', serif !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.reunion-button-outline:hover {
+  background: rgba(184, 149, 106, 0.1) !important;
+  border-color: rgba(184, 149, 106, 0.5) !important;
+}
+
+.reunion-guest-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(184, 149, 106, 0.1);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.reunion-guest-row:hover {
+  border-color: rgba(184, 149, 106, 0.2);
+}
+
+.reunion-badge {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #b8956a;
+  background: rgba(184, 149, 106, 0.1);
+  border: 1px solid rgba(184, 149, 106, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.reunion-remove-btn {
+  color: rgba(184, 149, 106, 0.4);
+  font-size: 1.25rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.reunion-remove-btn:hover {
+  color: #e8ddd0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.reunion-add-guest {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b8956a;
+  font-family: 'Lora', sans-serif;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  padding: 0.5rem 0;
+}
+
+.reunion-add-guest:hover {
+  opacity: 1;
+}
+
+.reunion-info-bar {
+  background: rgba(184, 149, 106, 0.06);
+  border: 1px solid rgba(184, 149, 106, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.reunion-success-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(184, 149, 106, 0.15);
+  color: #b8956a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: reunionPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reunion-confirm-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reunion-confirm-row:last-child {
+  border-bottom: none;
+}
+
+.reunion-meal-fade {
+  animation: reunionSlideDown 0.3s ease-out;
+}
+
+.reunion-shake {
+  animation: reunionShake 0.4s ease;
+}
+
+@keyframes reunionFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 0.6; transform: translateY(0); }
+}
+
+@keyframes reunionSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reunionPop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes reunionShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ===== Admin Panel Styles ===== */
+
+.reunion-tabs-list {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(184, 149, 106, 0.1) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.25rem !important;
+}
+
+.reunion-tab-trigger {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  color: rgba(184, 149, 106, 0.5) !important;
+  border-radius: 0.375rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.reunion-tab-trigger[data-state="active"] {
+  background: rgba(184, 149, 106, 0.15) !important;
+  color: #f0e6d8 !important;
+  box-shadow: none !important;
+}
+
+.reunion-tab-trigger:hover:not([data-state="active"]) {
+  color: rgba(184, 149, 106, 0.8) !important;
+}
+
+.reunion-admin-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.reunion-admin-table th {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b8956a;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(184, 149, 106, 0.15);
+}
+
+.reunion-admin-table td {
+  font-family: 'Lora', sans-serif;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.reunion-admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.reunion-admin-table tr:hover td {
+  background: rgba(184, 149, 106, 0.04);
+}
+
+.reunion-status-submitted {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6dc98f;
+  background: rgba(109, 201, 143, 0.1);
+  border: 1px solid rgba(109, 201, 143, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.reunion-status-pending {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #b8956a;
+  background: rgba(184, 149, 106, 0.1);
+  border: 1px solid rgba(184, 149, 106, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.reunion-status-declined {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c97070;
+  background: rgba(201, 112, 112, 0.1);
+  border: 1px solid rgba(201, 112, 112, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.reunion-badge-delegated {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7db8d4;
+  background: rgba(125, 184, 212, 0.1);
+  border: 1px solid rgba(125, 184, 212, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Invite action buttons */
+.reunion-invite-btn {
+  color: rgba(184, 149, 106, 0.5);
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.reunion-invite-btn:hover {
+  color: #b8956a;
+  background: rgba(184, 149, 106, 0.1);
+  border-color: rgba(184, 149, 106, 0.2);
+}
+
+/* Edit dialog */
+.reunion-dialog {
+  background: #1e1a15 !important;
+  border: 1px solid rgba(184, 149, 106, 0.15) !important;
+  color: #e8ddd0 !important;
 }

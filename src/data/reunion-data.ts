@@ -100,6 +100,56 @@ export async function addMember(name: string): Promise<FamilyMember> {
   return member;
 }
 
+export async function updateMember(
+  oldCode: string,
+  updates: { name?: string; code?: string; email?: string }
+): Promise<void> {
+  const newCode = updates.code ?? oldCode;
+
+  // Update localStorage
+  const dynamic = readLS<FamilyMember>(LS_DYNAMIC_MEMBERS, []);
+  const idx = dynamic.findIndex((m) => m.code.toLowerCase() === oldCode.toLowerCase());
+  if (idx >= 0) {
+    if (updates.name) dynamic[idx].name = updates.name;
+    if (updates.code) dynamic[idx].code = updates.code;
+    if (updates.email !== undefined) dynamic[idx].email = updates.email || undefined;
+    writeLS(LS_DYNAMIC_MEMBERS, dynamic);
+  } else {
+    // Static member being edited — store override in dynamic list
+    const staticMember = familyMembers.find(
+      (m) => m.code.toLowerCase() === oldCode.toLowerCase()
+    );
+    if (staticMember) {
+      dynamic.push({
+        code: newCode,
+        name: updates.name ?? staticMember.name,
+        email: updates.email ?? staticMember.email,
+      });
+      writeLS(LS_DYNAMIC_MEMBERS, dynamic);
+    }
+  }
+
+  // Try Supabase
+  try {
+    if (oldCode !== newCode) {
+      // Code changed — delete old, insert new
+      await supabase.from("reunion_members" as any).delete().eq("code", oldCode);
+    }
+    await supabase.from("reunion_members" as any).upsert(
+      {
+        code: newCode,
+        name: updates.name ?? oldCode,
+        email: updates.email ?? null,
+        added_by: "david2026",
+        created_at: new Date().toISOString(),
+      } as any,
+      { onConflict: "code" as any }
+    );
+  } catch {
+    // localStorage fallback handled
+  }
+}
+
 // ─── Delegations ────────────────────────────────────────────────────────────
 
 export async function getAllDelegations(): Promise<DelegationAssignment[]> {
