@@ -52,27 +52,44 @@ export async function getAllMembers(): Promise<FamilyMember[]> {
   try {
     const { data, error } = await supabase
       .from("reunion_members" as any)
-      .select("code, name") as any;
+      .select("code, name, email") as any;
     if (!error && data?.length) {
       // Merge Supabase dynamic members into localStorage
       writeLS(LS_DYNAMIC_MEMBERS, data);
-      return dedupeMembers([...familyMembers, ...data]);
+      // Dynamic/Supabase overrides come FIRST so they win over static config
+      return mergeMembers(familyMembers, data);
     }
   } catch {
     // Supabase unavailable
   }
 
-  return dedupeMembers([...familyMembers, ...dynamic]);
+  return mergeMembers(familyMembers, dynamic);
 }
 
-function dedupeMembers(members: FamilyMember[]): FamilyMember[] {
-  const seen = new Set<string>();
-  return members.filter((m) => {
-    const key = m.code.toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+// Merge static config with dynamic overrides. Dynamic entries win for matching codes,
+// preserving any edited fields (email, name changes). New dynamic members are appended.
+function mergeMembers(staticMembers: FamilyMember[], dynamicMembers: FamilyMember[]): FamilyMember[] {
+  const overrides = new Map<string, FamilyMember>();
+  for (const m of dynamicMembers) {
+    overrides.set(m.code.toLowerCase(), m);
+  }
+
+  // Start with static members, applying overrides where they exist
+  const result: FamilyMember[] = staticMembers.map((m) => {
+    const override = overrides.get(m.code.toLowerCase());
+    if (override) {
+      overrides.delete(m.code.toLowerCase());
+      return { ...m, ...override }; // override wins for name, email, etc.
+    }
+    return m;
   });
+
+  // Append any dynamic members that aren't in the static list (newly added)
+  for (const m of overrides.values()) {
+    result.push(m);
+  }
+
+  return result;
 }
 
 export async function addMember(name: string): Promise<FamilyMember> {
