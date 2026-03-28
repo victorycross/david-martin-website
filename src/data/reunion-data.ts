@@ -1,0 +1,208 @@
+// Unified data access layer for Family Reunion RSVP
+// Tries Supabase first, falls back to localStorage for offline/no-table scenarios.
+
+import { supabase } from "@/integrations/supabase/client";
+import { familyMembers, starterOptions, mainCourseOptions, dessertOptions, type FamilyMember } from "./reunion-config";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface DelegationAssignment {
+  delegateName: string;
+  managerCode: string;
+}
+
+export interface RsvpRecord {
+  family_code: string;
+  family_member: string;
+  guest_name: string;
+  attending: boolean;
+  starter: number | null;
+  main_course: number | null;
+  dessert: number | null;
+  submitted_at: string;
+}
+
+// ─── localStorage Keys ──────────────────────────────────────────────────────
+
+const LS_DYNAMIC_MEMBERS = "reunion_dynamic_members";
+const LS_DELEGATIONS = "reunion_delegations";
+const LS_RSVPS = "reunion_rsvps_data";
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function readLS<T>(key: string, fallback: T[]): T[] {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeLS<T>(key: string, data: T[]) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// ─── Members ────────────────────────────────────────────────────────────────
+
+export async function getAllMembers(): Promise<FamilyMember[]> {
+  const dynamic = readLS<FamilyMember>(LS_DYNAMIC_MEMBERS, []);
+
+  // Try Supabase
+  try {
+    const { data, error } = await supabase
+      .from("reunion_members" as any)
+      .select("code, name") as any;
+    if (!error && data?.length) {
+      // Merge Supabase dynamic members into localStorage
+      writeLS(LS_DYNAMIC_MEMBERS, data);
+      return dedupeMembers([...familyMembers, ...data]);
+    }
+  } catch {
+    // Supabase unavailable
+  }
+
+  return dedupeMembers([...familyMembers, ...dynamic]);
+}
+
+function dedupeMembers(members: FamilyMember[]): FamilyMember[] {
+  const seen = new Set<string>();
+  return members.filter((m) => {
+    const key = m.code.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export async function addMember(name: string): Promise<FamilyMember> {
+  const code = name.toLowerCase().replace(/\s+/g, "") + "2026";
+  const member: FamilyMember = { code, name };
+
+  // Save to localStorage immediately
+  const dynamic = readLS<FamilyMember>(LS_DYNAMIC_MEMBERS, []);
+  const exists = dynamic.some((m) => m.code.toLowerCase() === code.toLowerCase());
+  if (!exists) {
+    dynamic.push(member);
+    writeLS(LS_DYNAMIC_MEMBERS, dynamic);
+  }
+
+  // Try Supabase
+  try {
+    await supabase.from("reunion_members" as any).upsert(
+      { code, name, added_by: "david2026", created_at: new Date().toISOString() } as any,
+      { onConflict: "code" as any }
+    );
+  } catch {
+    // localStorage fallback already handled
+  }
+
+  return member;
+}
+
+// ─── Delegations ────────────────────────────────────────────────────────────
+
+export async function getAllDelegations(): Promise<DelegationAssignment[]> {
+  // Try Supabase first
+  try {
+    const { data, error } = await supabase
+      .from("reunion_delegations" as any)
+      .select("delegate_name, manager_code") as any;
+    if (!error && data?.length) {
+      const assignments: DelegationAssignment[] = data.map((d: any) => ({
+        delegateName: d.delegate_name,
+        managerCode: d.manager_code,
+      }));
+      writeLS(LS_DELEGATIONS, assignments);
+      return assignments;
+    }
+  } catch {
+    // fall through
+  }
+
+  return readLS<DelegationAssignment>(LS_DELEGATIONS, []);
+}
+
+export async function getDelegationsForManager(managerCode: string): Promise<string[]> {
+  const all = await getAllDelegations();
+  return all
+    .filter((d) => d.managerCode.toLowerCase() === managerCode.toLowerCase())
+    .map((d) => d.delegateName);
+}
+
+export async function setDelegation(delegateName: string, managerCode: string): Promise<void> {
+  // Update localStorage
+  const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
+  const filtered = all.filter((d) => d.delegateName !== delegateName);
+  filtered.push({ delegateName, managerCode });
+  writeLS(LS_DELEGATIONS, filtered);
+
+  // Try Supabase
+  try {
+    await supabase.from("reunion_delegations" as any).upsert(
+      {
+        delegate_name: delegateName,
+        manager_code: managerCode,
+        assigned_by: "david2026",
+        created_at: new Date().toISOString(),
+      } as any,
+      { onConflict: "delegate_name" as any }
+    );
+  } catch {
+    // localStorage fallback handled
+  }
+}
+
+export async function removeDelegation(delegateName: string): Promise<void> {
+  // Update localStorage
+  const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
+  writeLS(LS_DELEGATIONS, all.filter((d) => d.delegateName !== delegateName));
+
+  // Try Supabase
+  try {
+    await supabase
+      .from("reunion_delegations" as any)
+      .delete()
+      .eq("delegate_name", delegateName);
+  } catch {
+    // localStorage fallback handled
+  }
+}
+
+// ─── RSVPs ──────────────────────────────────────────────────────────────────
+
+export async function getAllRsvps(): Promise<RsvpRecord[]> {
+  // Try Supabase
+  try {
+    const { data, error } = await supabase
+      .from("reunion_rsvps" as any)
+      .select("*") as any;
+    if (!error && data?.length) {
+      writeLS(LS_RSVPS, data);
+      return data;
+    }
+  } catch {
+    // fall through
+  }
+
+  return readLS<RsvpRecord>(LS_RSVPS, []);
+}
+
+export async function getRsvpsForMember(familyCode: string): Promise<RsvpRecord[]> {
+  const all = await getAllRsvps();
+  return all.filter((r) => r.family_code.toLowerCase() === familyCode.toLowerCase());
+}
+
+// ─── Menu helpers ───────────────────────────────────────────────────────────
+
+export function getMenuItemName(
+  category: "starter" | "main" | "dessert",
+  id: number | null
+): string {
+  if (id === null) return "\u2014";
+  const options =
+    category === "starter" ? starterOptions :
+    category === "main" ? mainCourseOptions :
+    dessertOptions;
+  return options.find((o) => o.id === id)?.name ?? "\u2014";
+}
