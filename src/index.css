@@ -594,6 +594,27 @@
   border-color: rgba(184, 149, 106, 0.2);
 }
 
+/* Edit button */
+.reunion-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #b8956a;
+  font-family: 'Lora', sans-serif;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid rgba(184, 149, 106, 0.25);
+  background: rgba(184, 149, 106, 0.08);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.reunion-edit-btn:hover {
+  background: rgba(184, 149, 106, 0.18);
+  border-color: rgba(184, 149, 106, 0.4);
+}
+
 /* Edit dialog */
 .reunion-dialog {
   background: #1e1a15 !important;
