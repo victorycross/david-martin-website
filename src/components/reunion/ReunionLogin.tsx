@@ -15,9 +15,27 @@ export function ReunionLogin({ onLogin }: ReunionLoginProps) {
   const [isShaking, setIsShaking] = useState(false);
   const [allMembers, setAllMembers] = useState<FamilyMember[]>(familyMembers);
 
-  // Load dynamic members on mount
+  // Load dynamic members and check for ?code= auto-login
   useEffect(() => {
-    getAllMembers().then(setAllMembers);
+    getAllMembers().then((members) => {
+      setAllMembers(members);
+      // Auto-login if ?code= is in the URL
+      const params = new URLSearchParams(window.location.search);
+      const codeParam = params.get("code");
+      if (codeParam) {
+        const member = members.find(
+          (m) => m.code.toLowerCase() === codeParam.trim().toLowerCase()
+        );
+        if (member) {
+          // Clean the URL
+          window.history.replaceState(null, "", window.location.pathname);
+          onLogin(member);
+        } else {
+          setCode(codeParam);
+          setError("Code not recognized. Please check your invitation.");
+        }
+      }
+    });
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

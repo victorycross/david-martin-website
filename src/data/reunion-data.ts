@@ -2,7 +2,7 @@
 // Tries Supabase first, falls back to localStorage for offline/no-table scenarios.
 
 import { supabase } from "@/integrations/supabase/client";
-import { familyMembers, starterOptions, mainCourseOptions, dessertOptions, type FamilyMember } from "./reunion-config";
+import { familyMembers, starterOptions, mainCourseOptions, dessertOptions, eventDetails, type FamilyMember } from "./reunion-config";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -205,4 +205,43 @@ export function getMenuItemName(
     category === "main" ? mainCourseOptions :
     dessertOptions;
   return options.find((o) => o.id === id)?.name ?? "\u2014";
+}
+
+// ─── Invite helpers ─────────────────────────────────────────────────────────
+
+const SITE_URL = "https://david-martin.ca";
+
+export function getInviteUrl(member: FamilyMember): string {
+  return `${SITE_URL}/reunion?code=${encodeURIComponent(member.code)}`;
+}
+
+export function getInviteEmailBody(member: FamilyMember): string {
+  const url = getInviteUrl(member);
+  return [
+    `Hi ${member.name},`,
+    ``,
+    `You\u2019re invited to the ${eventDetails.title}!`,
+    ``,
+    `\ud83d\udcc5 ${eventDetails.date}`,
+    `\u23f0 ${eventDetails.time}`,
+    `\ud83d\udccd ${eventDetails.location}, ${eventDetails.address}`,
+    ``,
+    `Please RSVP and choose your meal by ${eventDetails.rsvpDeadline} using your personal link:`,
+    `${url}`,
+    ``,
+    `Your access code is: ${member.code}`,
+    ``,
+    `We hope to see you there!`,
+    ``,
+    `With love,`,
+    `Your Family Reunion Planning Committee`,
+    ``,
+    `Questions? Contact ${eventDetails.contactEmail} or call ${eventDetails.contactPhone}`,
+  ].join("\n");
+}
+
+export function getAllInviteLinks(members: FamilyMember[]): string {
+  return members
+    .map((m) => `${m.name}: ${getInviteUrl(m)}`)
+    .join("\n");
 }

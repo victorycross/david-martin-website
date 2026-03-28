@@ -5,6 +5,7 @@
 export interface FamilyMember {
   code: string;
   name: string;
+  email?: string;
 }
 
 export const familyMembers: FamilyMember[] = [
