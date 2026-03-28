@@ -38,6 +38,16 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      // SPA redirect handler for GitHub Pages (pairs with 404.html)
+      (function() {
+        var redirect = sessionStorage.getItem('spa-redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa-redirect');
+          window.history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
