@@ -6,13 +6,14 @@ interface RSVPConfirmationProps {
   guests: GuestData[];
   onEdit: () => void;
   onLogout: () => void;
+  isUpdate?: boolean;
 }
 
 function getMealName(options: { id: number; name: string }[], id: string) {
   return options.find((o) => String(o.id) === id)?.name ?? "\u2014";
 }
 
-export function RSVPConfirmation({ guests, onEdit, onLogout }: RSVPConfirmationProps) {
+export function RSVPConfirmation({ guests, onEdit, onLogout, isUpdate }: RSVPConfirmationProps) {
   const attending = guests.filter((g) => g.attending === "yes");
   const notAttending = guests.filter((g) => g.attending === "no");
 
@@ -29,10 +30,10 @@ export function RSVPConfirmation({ guests, onEdit, onLogout }: RSVPConfirmationP
         </div>
 
         <h1 className="reunion-title text-3xl sm:text-4xl mb-2">
-          Thank You!
+          {isUpdate ? "You\u2019re All Set!" : "Thank You!"}
         </h1>
         <p className="reunion-subtitle text-base mb-8 opacity-70">
-          Your RSVP has been submitted
+          {isUpdate ? "Your RSVP is on file" : "Your RSVP has been submitted"}
         </p>
 
         {/* Confirmation card */}
@@ -77,7 +78,7 @@ export function RSVPConfirmation({ guests, onEdit, onLogout }: RSVPConfirmationP
         {/* Actions */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={onEdit} variant="outline" className="reunion-button-outline">
-            Edit Response
+            {isUpdate ? "Update Response" : "Edit Response"}
           </Button>
           <Button onClick={onLogout} variant="ghost" className="reunion-body text-xs opacity-50 hover:opacity-80">
             Sign Out

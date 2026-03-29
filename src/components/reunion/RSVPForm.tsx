@@ -5,6 +5,7 @@ import { eventDetails, type FamilyMember } from "@/data/reunion-config";
 import { GuestRow, type GuestData } from "./GuestRow";
 import { RSVPConfirmation } from "./RSVPConfirmation";
 import { supabase } from "@/integrations/supabase/client";
+import { getRsvpsForMember, type RsvpRecord } from "@/data/reunion-data";
 
 interface RSVPFormProps {
   member: FamilyMember;
@@ -22,6 +23,17 @@ const emptyGuest = (): GuestData => ({
   dessert: "",
 });
 
+// Convert an RsvpRecord from Supabase into the local GuestData format
+function rsvpToGuest(r: RsvpRecord): GuestData {
+  return {
+    name: r.guest_name,
+    attending: r.attending ? "yes" : "no",
+    starter: r.starter != null ? String(r.starter) : "",
+    mainCourse: r.main_course != null ? String(r.main_course) : "",
+    dessert: r.dessert != null ? String(r.dessert) : "",
+  };
+}
+
 export function RSVPForm({
   member,
   onLogout,
@@ -30,8 +42,10 @@ export function RSVPForm({
   delegatedGuests = [],
 }: RSVPFormProps) {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [guests, setGuests] = useState<GuestData[]>([
     { ...emptyGuest(), name: member.name },
   ]);
@@ -41,18 +55,36 @@ export function RSVPForm({
     new Set()
   );
 
-  // Pre-populate delegated guests on mount
+  // Load existing RSVP data on mount
   useEffect(() => {
-    if (delegatedGuests.length === 0) return;
+    async function loadExisting() {
+      try {
+        const existing = await getRsvpsForMember(member.code);
+        if (existing.length > 0) {
+          // They've already submitted — pre-fill and show confirmation
+          const loadedGuests = existing.map(rsvpToGuest);
+          setGuests(loadedGuests);
+          setSubmitted(true);
+        }
+      } catch {
+        // If fetch fails, show blank form
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadExisting();
+  }, [member.code]);
+
+  // Pre-populate delegated guests after loading
+  useEffect(() => {
+    if (loading || delegatedGuests.length === 0) return;
     setGuests((prev) => {
-      // Only add delegated guests that aren't already in the list
       const existing = new Set(prev.map((g) => g.name.toLowerCase()));
       const toAdd = delegatedGuests
         .filter((name) => !existing.has(name.toLowerCase()))
         .map((name) => ({ ...emptyGuest(), name }));
       if (toAdd.length === 0) return prev;
       const newGuests = [...prev, ...toAdd];
-      // Mark the new indices as delegated
       const newDelegated = new Set<number>();
       for (let i = prev.length; i < newGuests.length; i++) {
         newDelegated.add(i);
@@ -60,7 +92,7 @@ export function RSVPForm({
       setDelegatedIndices(newDelegated);
       return newGuests;
     });
-  }, [delegatedGuests]);
+  }, [delegatedGuests, loading]);
 
   const updateGuest = (index: number, data: Partial<GuestData>) => {
     setGuests((prev) =>
@@ -73,15 +105,13 @@ export function RSVPForm({
   };
 
   const removeGuest = (index: number) => {
-    if (delegatedIndices.has(index)) return; // Can't remove delegated guests
+    if (delegatedIndices.has(index)) return;
     setGuests((prev) => prev.filter((_, i) => i !== index));
-    // Recompute delegated indices after removal
     setDelegatedIndices((prev) => {
       const newSet = new Set<number>();
       prev.forEach((di) => {
         if (di < index) newSet.add(di);
         else if (di > index) newSet.add(di - 1);
-        // di === index: removed, skip
       });
       return newSet;
     });
@@ -126,13 +156,15 @@ export function RSVPForm({
       }
 
       setSubmitted(true);
+      setEditing(false);
       toast({
-        title: "RSVP Submitted!",
+        title: editing ? "RSVP Updated!" : "RSVP Submitted!",
         description: "Your response has been recorded. See you there!",
       });
     } catch (err) {
       console.error("Submit error:", err);
       setSubmitted(true);
+      setEditing(false);
       toast({
         title: "RSVP Submitted!",
         description: "Your response has been recorded.",
@@ -142,12 +174,27 @@ export function RSVPForm({
     }
   };
 
-  if (submitted) {
+  // Loading state
+  if (loading) {
+    return (
+      <div className="reunion-page min-h-screen flex items-center justify-center">
+        <div className="reunion-grain" />
+        <div className="relative z-10 text-center">
+          <div className="w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="reunion-body text-sm opacity-50">Loading your RSVP...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show confirmation if submitted and not actively editing
+  if (submitted && !editing) {
     return (
       <RSVPConfirmation
         guests={guests}
-        onEdit={() => setSubmitted(false)}
+        onEdit={() => setEditing(true)}
         onLogout={onLogout}
+        isUpdate={true}
       />
     );
   }
@@ -159,7 +206,9 @@ export function RSVPForm({
       <div className="relative z-10 max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="reunion-title text-3xl sm:text-4xl mb-1">RSVP</h1>
+          <h1 className="reunion-title text-3xl sm:text-4xl mb-1">
+            {editing ? "Update RSVP" : "RSVP"}
+          </h1>
           <p className="reunion-subtitle text-sm tracking-widest uppercase">
             {eventDetails.title}
           </p>
@@ -214,8 +263,22 @@ export function RSVPForm({
               className="reunion-button flex-1"
               disabled={!isValid || submitting}
             >
-              {submitting ? "Submitting..." : "Submit RSVP"}
+              {submitting
+                ? "Submitting..."
+                : editing
+                ? "Update RSVP"
+                : "Submit RSVP"}
             </Button>
+            {editing && (
+              <Button
+                type="button"
+                variant="outline"
+                className="reunion-button-outline"
+                onClick={() => setEditing(false)}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
 
           {!isValid && guests.some((g) => g.attending) && (
