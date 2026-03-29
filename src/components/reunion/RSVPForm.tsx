@@ -6,6 +6,7 @@ import { GuestRow, type GuestData } from "./GuestRow";
 import { RSVPConfirmation } from "./RSVPConfirmation";
 import { supabase } from "@/integrations/supabase/client";
 import { getRsvpsForMember, type RsvpRecord } from "@/data/reunion-data";
+import { NewsFeed } from "./NewsFeed";
 
 interface RSVPFormProps {
   member: FamilyMember;
@@ -227,6 +228,9 @@ export function RSVPForm({
             Please respond by {eventDetails.rsvpDeadline}
           </p>
         </div>
+
+        {/* News/Updates */}
+        <NewsFeed />
 
         {/* Form */}
         <form onSubmit={handleSubmit}>

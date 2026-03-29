@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { eventDetails, starterOptions, mainCourseOptions, dessertOptions } from "@/data/reunion-config";
 import type { GuestData } from "./GuestRow";
+import { NewsFeed } from "./NewsFeed";
 
 interface RSVPConfirmationProps {
   guests: GuestData[];
@@ -80,9 +81,11 @@ export function RSVPConfirmation({ guests, onEdit, onLogout, isUpdate }: RSVPCon
           <Button onClick={onEdit} variant="outline" className="reunion-button-outline">
             {isUpdate ? "Update Response" : "Edit Response"}
           </Button>
-          <Button onClick={onLogout} variant="ghost" className="reunion-body text-xs opacity-50 hover:opacity-80">
-            Sign Out
-          </Button>
+        </div>
+
+        {/* News/Updates */}
+        <div className="mt-10 text-left w-full max-w-lg">
+          <NewsFeed />
         </div>
       </div>
     </div>
