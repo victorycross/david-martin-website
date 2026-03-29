@@ -171,9 +171,10 @@ export function AdminAddMember({ allMembers, onUpdate, adminCode }: AdminAddMemb
         <h3 className="reunion-label">All Members ({allMembers.length})</h3>
         <button
           onClick={() => {
+            const sorted = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
             const csv = [
               "Name,Email,Code",
-              ...allMembers.map(
+              ...sorted.map(
                 (m) =>
                   `"${m.name}","${m.email || ""}","${m.code}"`
               ),
@@ -198,7 +199,7 @@ export function AdminAddMember({ allMembers, onUpdate, adminCode }: AdminAddMemb
         </button>
       </div>
       <div className="space-y-2">
-        {allMembers.map((m) => (
+        {[...allMembers].sort((a, b) => a.name.localeCompare(b.name)).map((m) => (
           <div
             key={m.code}
             className="reunion-guest-row flex items-center justify-between gap-3"

@@ -21,12 +21,9 @@ export function AdminDelegation({
   const { toast } = useToast();
   const [saving, setSaving] = useState<string | null>(null);
 
-  // All members can be delegated (including admins — they might want someone
-  // else to also RSVP for their kids, etc.)
-  const delegateable = allMembers;
-
-  // All members can be managers
-  const managers = allMembers;
+  // All members sorted alphabetically
+  const delegateable = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
+  const managers = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
 
   // Get current manager codes for a given delegate
   const getManagersFor = (memberName: string): string[] => {
@@ -66,9 +63,11 @@ export function AdminDelegation({
       manager: m,
       delegates: delegations
         .filter((d) => d.managerCode.toLowerCase() === m.code.toLowerCase())
-        .map((d) => d.delegateName),
+        .map((d) => d.delegateName)
+        .sort(),
     }))
-    .filter((g) => g.delegates.length > 0);
+    .filter((g) => g.delegates.length > 0)
+    .sort((a, b) => a.manager.name.localeCompare(b.manager.name));
 
   return (
     <div>
