@@ -762,3 +762,151 @@
   border: none;
   filter: saturate(0.7) brightness(0.85) contrast(1.1);
 }
+
+/* ===== Carousel / Slideshow ===== */
+
+.reunion-carousel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 8, 6, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: reunionFadeInFast 0.2s ease;
+}
+
+@keyframes reunionFadeInFast {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.reunion-carousel-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reunion-carousel-img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  animation: reunionSlideIn 0.3s ease;
+}
+
+@keyframes reunionSlideIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.reunion-carousel-caption {
+  text-align: center;
+  padding: 1rem 0;
+  max-width: 600px;
+}
+
+/* Arrows */
+.reunion-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(240, 230, 216, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10;
+}
+
+.reunion-carousel-arrow:hover {
+  background: rgba(184, 149, 106, 0.2);
+  color: #f0e6d8;
+  border-color: rgba(184, 149, 106, 0.3);
+}
+
+.reunion-carousel-arrow-left {
+  left: 1rem;
+}
+
+.reunion-carousel-arrow-right {
+  right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .reunion-carousel-arrow-left { left: 2rem; }
+  .reunion-carousel-arrow-right { right: 2rem; }
+}
+
+/* Top controls */
+.reunion-carousel-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.reunion-carousel-ctrl-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(240, 230, 216, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reunion-carousel-ctrl-btn:hover {
+  background: rgba(184, 149, 106, 0.2);
+  color: #f0e6d8;
+  border-color: rgba(184, 149, 106, 0.3);
+}
+
+.reunion-carousel-ctrl-active {
+  background: rgba(184, 149, 106, 0.25) !important;
+  color: #b8956a !important;
+  border-color: rgba(184, 149, 106, 0.4) !important;
+}
+
+/* Progress dots */
+.reunion-carousel-dots {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  z-index: 10;
+}
+
+.reunion-carousel-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.reunion-carousel-dot:hover {
+  background: rgba(184, 149, 106, 0.4);
+}
+
+.reunion-carousel-dot-active {
+  background: #b8956a;
+  transform: scale(1.3);
+}
