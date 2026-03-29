@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { getMenuItemName, type RsvpRecord } from "@/data/reunion-data";
 import { generateReunionPdf } from "@/utils/reunion-pdf";
+import { getMealCounts } from "@/utils/reunion-meal-counts";
 
 interface AdminMealSummaryProps {
   rsvps: RsvpRecord[];
@@ -24,8 +25,9 @@ export function AdminMealSummary({ rsvps }: AdminMealSummaryProps) {
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [collapsed, setCollapsed] = useState(false);
 
-  const attending = rsvps.filter((r) => r.attending).length;
-  const declined = rsvps.filter((r) => !r.attending).length;
+  const attendingCount = rsvps.filter((r) => r.attending).length;
+  const declinedCount = rsvps.filter((r) => !r.attending).length;
+  const counts = useMemo(() => getMealCounts(rsvps), [rsvps]);
 
   const sorted = useMemo(() => {
     const list = [...rsvps];
@@ -48,13 +50,13 @@ export function AdminMealSummary({ rsvps }: AdminMealSummaryProps) {
 
   return (
     <div>
-      {/* Summary counts */}
+      {/* Summary bar */}
       <div className="reunion-info-bar mb-6 flex items-center justify-between">
         <button onClick={() => setCollapsed((c) => !c)} className="reunion-body text-sm text-left flex items-center gap-2">
           <span className={`reunion-collapse-arrow ${collapsed ? "" : "reunion-collapse-arrow-open"}`}>&#x25B6;</span>
-          <span className="reunion-heading text-lg">{attending}</span> attending
+          <span className="reunion-heading text-lg">{attendingCount}</span> attending
           <span className="opacity-40 mx-2">|</span>
-          <span className="reunion-heading text-lg">{declined}</span> declined
+          <span className="reunion-heading text-lg">{declinedCount}</span> declined
           <span className="opacity-40 mx-2">|</span>
           <span className="reunion-heading text-lg">{rsvps.length}</span> total
         </button>
@@ -67,6 +69,16 @@ export function AdminMealSummary({ rsvps }: AdminMealSummaryProps) {
         </Button>
       </div>
 
+      {/* Meal counts summary */}
+      {attendingCount > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <MealCountCard title="Starters" items={counts.starters} />
+          <MealCountCard title="Main Courses" items={counts.mains} />
+          <MealCountCard title="Desserts" items={counts.desserts} />
+        </div>
+      )}
+
+      {/* Guest detail table */}
       {!collapsed && (
         <div className="overflow-x-auto">
           <table className="reunion-admin-table w-full">
@@ -121,6 +133,31 @@ export function AdminMealSummary({ rsvps }: AdminMealSummaryProps) {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MealCountCard({ title, items }: { title: string; items: { name: string; count: number }[] }) {
+  const total = items.reduce((sum, i) => sum + i.count, 0);
+  return (
+    <div className="reunion-card p-4">
+      <h3 className="reunion-label mb-2">{title}</h3>
+      {items.length === 0 ? (
+        <p className="reunion-body text-xs opacity-40">No selections yet</p>
+      ) : (
+        <div className="space-y-1">
+          {items.map((item) => (
+            <div key={item.name} className="flex items-center justify-between gap-2">
+              <span className="reunion-body text-xs opacity-70 truncate">{item.name}</span>
+              <span className="reunion-heading text-xs flex-shrink-0">{item.count}</span>
+            </div>
+          ))}
+          <div className="flex items-center justify-between gap-2 pt-1 mt-1 border-t border-white/10">
+            <span className="reunion-label text-xs">Total</span>
+            <span className="reunion-heading text-xs">{total}</span>
+          </div>
         </div>
       )}
     </div>

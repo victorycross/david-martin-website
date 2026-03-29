@@ -5,9 +5,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { starterOptions, mainCourseOptions, dessertOptions, eventDetails } from "@/data/reunion-config";
 import { getMenuItemName, type RsvpRecord } from "@/data/reunion-data";
+import { getMealCounts, type MealCounts } from "./reunion-meal-counts";
 
 export function generateReunionPdf(rsvps: RsvpRecord[]) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "letter" });
+  const attending = rsvps.filter((r) => r.attending);
+  const declined = rsvps.filter((r) => !r.attending);
+  const counts = getMealCounts(rsvps);
 
   // Title
   doc.setFontSize(18);
@@ -22,9 +26,73 @@ export function generateReunionPdf(rsvps: RsvpRecord[]) {
   doc.text(`Exported: ${new Date().toLocaleDateString()}`, 14, 32);
   doc.setTextColor(0);
 
-  // Main RSVP table
+  // ── Meal Totals Summary ──
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("Meal Order Summary", 14, 42);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+
+  const summaryRows: string[][] = [];
+
+  summaryRows.push(["", "STARTERS", "", ""]);
+  counts.starters.forEach((c) => summaryRows.push(["", c.name, String(c.count), ""]));
+  summaryRows.push(["", "", "", ""]);
+
+  summaryRows.push(["", "MAIN COURSES", "", ""]);
+  counts.mains.forEach((c) => summaryRows.push(["", c.name, String(c.count), ""]));
+  summaryRows.push(["", "", "", ""]);
+
+  summaryRows.push(["", "DESSERTS", "", ""]);
+  counts.desserts.forEach((c) => summaryRows.push(["", c.name, String(c.count), ""]));
+
+  autoTable(doc, {
+    startY: 46,
+    head: [["", "Item", "Qty", ""]],
+    body: summaryRows,
+    theme: "plain",
+    headStyles: {
+      fillColor: [40, 35, 30],
+      textColor: [240, 230, 216],
+      fontStyle: "bold",
+      fontSize: 8,
+    },
+    bodyStyles: { fontSize: 8 },
+    columnStyles: {
+      0: { cellWidth: 10 },
+      1: { cellWidth: 120 },
+      2: { cellWidth: 15, halign: "center", fontStyle: "bold" },
+      3: { cellWidth: 10 },
+    },
+    styles: { cellPadding: 1.5 },
+    didParseCell: (data: any) => {
+      // Bold section headers
+      const text = data.cell?.raw;
+      if (typeof text === "string" && text === text.toUpperCase() && text.length > 2) {
+        data.cell.styles.fontStyle = "bold";
+        data.cell.styles.textColor = [100, 80, 50];
+      }
+    },
+  });
+
+  let summaryEnd = (doc as any).lastAutoTable?.finalY ?? 100;
+  summaryEnd += 4;
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text(
+    `Total Attending: ${attending.length}  |  Declined: ${declined.length}  |  Total Responses: ${rsvps.length}`,
+    14, summaryEnd
+  );
+
+  // ── Guest Detail Table ──
+  summaryEnd += 10;
+  doc.setFontSize(11);
+  doc.text("Guest Details", 14, summaryEnd);
+
   const tableRows = rsvps.map((r) => [
     r.guest_name,
+    "", // Table # placeholder
     r.attending ? "Yes" : "No",
     r.attending ? getMenuItemName("starter", r.starter) : "\u2014",
     r.attending ? getMenuItemName("main", r.main_course) : "\u2014",
@@ -32,8 +100,8 @@ export function generateReunionPdf(rsvps: RsvpRecord[]) {
   ]);
 
   autoTable(doc, {
-    startY: 38,
-    head: [["Guest Name", "RSVP", "Starter Option", "Main Course Option", "Dessert Option"]],
+    startY: summaryEnd + 4,
+    head: [["Guest Name", "Table #", "RSVP", "Starter", "Main Course", "Dessert"]],
     body: tableRows,
     theme: "grid",
     headStyles: {
@@ -45,56 +113,10 @@ export function generateReunionPdf(rsvps: RsvpRecord[]) {
     bodyStyles: { fontSize: 8 },
     alternateRowStyles: { fillColor: [248, 245, 240] },
     styles: { cellPadding: 3 },
+    columnStyles: {
+      1: { cellWidth: 20, halign: "center" }, // Table # column
+    },
   });
-
-  // Menu legends below the table
-  const finalY = (doc as any).lastAutoTable?.finalY ?? 120;
-  let y = finalY + 12;
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("Menu Selection Reference", 14, y);
-  y += 8;
-
-  // Starter options
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.text("Starter Options", 14, y);
-  doc.setFont("helvetica", "normal");
-  y += 5;
-  for (const opt of starterOptions) {
-    doc.text(`${opt.id}. ${opt.name}`, 18, y);
-    y += 4.5;
-  }
-  y += 3;
-
-  // Main course options
-  doc.setFont("helvetica", "bold");
-  doc.text("Main Course Options", 14, y);
-  doc.setFont("helvetica", "normal");
-  y += 5;
-  for (const opt of mainCourseOptions) {
-    doc.text(`${opt.id}. ${opt.name}`, 18, y);
-    y += 4.5;
-  }
-  y += 3;
-
-  // Dessert options
-  doc.setFont("helvetica", "bold");
-  doc.text("Dessert Options", 14, y);
-  doc.setFont("helvetica", "normal");
-  y += 5;
-  for (const opt of dessertOptions) {
-    doc.text(`${opt.id}. ${opt.name}`, 18, y);
-    y += 4.5;
-  }
-
-  // Summary counts
-  const attending = rsvps.filter((r) => r.attending).length;
-  const declined = rsvps.filter((r) => !r.attending).length;
-  y += 8;
-  doc.setFont("helvetica", "bold");
-  doc.text(`Total Attending: ${attending}  |  Declined: ${declined}  |  Total Guests: ${rsvps.length}`, 14, y);
 
   doc.save("reunion-rsvps-2026.pdf");
 }
