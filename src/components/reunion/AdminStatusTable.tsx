@@ -173,28 +173,13 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange 
               {memberStatus.map((s) => (
                 <tr key={s.member.code}>
                   <td>
-                    <div className="flex items-center gap-1.5">
-                      <span className="reunion-heading text-sm">{s.member.name}</span>
-                      <button
-                        onClick={() => openProfileEdit(s.member)}
-                        className="reunion-invite-btn opacity-0 group-hover:opacity-100"
-                        style={{ opacity: undefined }}
-                        title={`Edit ${s.member.name}'s profile`}
-                        onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                        onMouseLeave={(e) => (e.currentTarget.style.opacity = "")}
-                      >
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      </button>
-                    </div>
+                    <span className="reunion-heading text-sm">{s.member.name}</span>
                     {s.member.email && (
-                      <span className="reunion-body text-xs opacity-40">{s.member.email}</span>
+                      <span className="reunion-body text-xs opacity-40 block">{s.member.email}</span>
                     )}
                   </td>
                   <td className="text-center">
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5">
                     {s.hasResponded ? (
                       <span className="reunion-status-submitted">Submitted</span>
                     ) : (
@@ -212,6 +197,16 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange 
                         </svg>
                       </button>
                     )}
+                    <button
+                      onClick={() => openProfileEdit(s.member)}
+                      className="reunion-invite-btn"
+                      title={`Edit ${s.member.name}'s profile`}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    </button>
                   </div>
                   </td>
                   <td className="text-center reunion-body text-sm">
