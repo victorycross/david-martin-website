@@ -48,11 +48,11 @@ export const dessertOptions: MenuOption[] = [
   { id: 3, name: "Ice Cream (kids dessert)" },
 ];
 
-// Admin configuration
-export const ADMIN_CODE = "david2026";
+// Admin configuration — multiple admins supported
+export const ADMIN_CODES = ["david2026", "ken2026"];
 
 export function isAdmin(member: FamilyMember): boolean {
-  return member.code.toLowerCase() === ADMIN_CODE;
+  return ADMIN_CODES.includes(member.code.toLowerCase());
 }
 
 export const eventDetails = {

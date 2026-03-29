@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ADMIN_CODE, type FamilyMember } from "@/data/reunion-config";
+import { ADMIN_CODES, type FamilyMember } from "@/data/reunion-config";
 import {
   setDelegation,
   removeDelegation,
@@ -32,7 +32,7 @@ export function AdminDelegation({
 
   // Members who can be delegated (everyone except David)
   const delegateable = allMembers.filter(
-    (m) => m.code.toLowerCase() !== ADMIN_CODE
+    (m) => !ADMIN_CODES.includes(m.code.toLowerCase())
   );
 
   const getManagerFor = (memberName: string): string => {

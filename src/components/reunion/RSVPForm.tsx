@@ -158,29 +158,11 @@ export function RSVPForm({
 
       <div className="relative z-10 max-w-2xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="reunion-title text-3xl sm:text-4xl mb-1">RSVP</h1>
-            <p className="reunion-subtitle text-sm tracking-widest uppercase">
-              {eventDetails.title}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {isAdmin && onShowAdmin && (
-              <button
-                onClick={onShowAdmin}
-                className="reunion-button-outline px-3 py-1.5 rounded-lg text-xs"
-              >
-                Admin
-              </button>
-            )}
-            <button
-              onClick={onLogout}
-              className="reunion-body text-xs opacity-50 hover:opacity-80 transition-opacity underline"
-            >
-              Sign out
-            </button>
-          </div>
+        <div className="mb-8">
+          <h1 className="reunion-title text-3xl sm:text-4xl mb-1">RSVP</h1>
+          <p className="reunion-subtitle text-sm tracking-widest uppercase">
+            {eventDetails.title}
+          </p>
         </div>
 
         {/* Event summary bar */}
