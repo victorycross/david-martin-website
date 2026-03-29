@@ -5,7 +5,7 @@ import { eventDetails, type FamilyMember } from "@/data/reunion-config";
 import { GuestRow, type GuestData } from "./GuestRow";
 import { RSVPConfirmation } from "./RSVPConfirmation";
 import { supabase } from "@/integrations/supabase/client";
-import { getRsvpsForMember, type RsvpRecord } from "@/data/reunion-data";
+import { getRsvpsForMember, getAllRsvps, type RsvpRecord } from "@/data/reunion-data";
 import { NewsFeed } from "./NewsFeed";
 
 interface RSVPFormProps {
@@ -56,15 +56,44 @@ export function RSVPForm({
     new Set()
   );
 
-  // Load existing RSVP data on mount
+  // Load existing RSVP data + delegated guests on mount
   useEffect(() => {
     async function loadExisting() {
       try {
-        const existing = await getRsvpsForMember(member.code);
-        if (existing.length > 0) {
-          // They've already submitted — pre-fill and show confirmation
-          const loadedGuests = existing.map(rsvpToGuest);
-          setGuests(loadedGuests);
+        // Load own RSVPs
+        const ownRsvps = await getRsvpsForMember(member.code);
+
+        // If admin, load all RSVPs to pre-fill delegated guests
+        let allRsvpMap = new Map<string, RsvpRecord>();
+        if (isAdmin && delegatedGuests.length > 0) {
+          const all = await getAllRsvps();
+          all.forEach((r) => allRsvpMap.set(r.guest_name.toLowerCase(), r));
+        }
+
+        // Build guest list: start with own RSVPs or blank self
+        const guestList: GuestData[] = ownRsvps.length > 0
+          ? ownRsvps.map(rsvpToGuest)
+          : [{ ...emptyGuest(), name: member.name }];
+
+        const hasOwnRsvp = ownRsvps.length > 0;
+
+        // Add delegated guests (pre-filled with their existing RSVPs if any)
+        const existingNames = new Set(guestList.map((g) => g.name.toLowerCase()));
+        const newDelegated = new Set<number>();
+
+        for (const name of delegatedGuests) {
+          if (existingNames.has(name.toLowerCase())) continue;
+          const existingRsvp = allRsvpMap.get(name.toLowerCase());
+          guestList.push(existingRsvp ? rsvpToGuest(existingRsvp) : { ...emptyGuest(), name });
+          newDelegated.add(guestList.length - 1);
+          existingNames.add(name.toLowerCase());
+        }
+
+        setGuests(guestList);
+        setDelegatedIndices(newDelegated);
+
+        // Show confirmation only if the primary member has submitted
+        if (hasOwnRsvp) {
           setSubmitted(true);
         }
       } catch {
@@ -74,26 +103,7 @@ export function RSVPForm({
       }
     }
     loadExisting();
-  }, [member.code]);
-
-  // Pre-populate delegated guests after loading
-  useEffect(() => {
-    if (loading || delegatedGuests.length === 0) return;
-    setGuests((prev) => {
-      const existing = new Set(prev.map((g) => g.name.toLowerCase()));
-      const toAdd = delegatedGuests
-        .filter((name) => !existing.has(name.toLowerCase()))
-        .map((name) => ({ ...emptyGuest(), name }));
-      if (toAdd.length === 0) return prev;
-      const newGuests = [...prev, ...toAdd];
-      const newDelegated = new Set<number>();
-      for (let i = prev.length; i < newGuests.length; i++) {
-        newDelegated.add(i);
-      }
-      setDelegatedIndices(newDelegated);
-      return newGuests;
-    });
-  }, [delegatedGuests, loading]);
+  }, [member.code, member.name, isAdmin, delegatedGuests]);
 
   const updateGuest = (index: number, data: Partial<GuestData>) => {
     setGuests((prev) =>

@@ -4,7 +4,7 @@ import { RSVPForm } from "@/components/reunion/RSVPForm";
 import { AdminPanel } from "@/components/reunion/AdminPanel";
 import { PhotoGallery } from "@/components/reunion/PhotoGallery";
 import { isAdmin, type FamilyMember } from "@/data/reunion-config";
-import { getDelegationsForManager } from "@/data/reunion-data";
+import { getDelegationsForManager, getAllMembers } from "@/data/reunion-data";
 
 const STORAGE_KEY = "reunion_member";
 
@@ -31,10 +31,21 @@ export default function FamilyReunion() {
     }
   }, []);
 
-  // Load delegations for logged-in member
+  // Load delegated guests — admins can manage everyone by default
   useEffect(() => {
     if (!member) return;
-    getDelegationsForManager(member.code).then(setDelegatedGuests);
+    if (isAdmin(member)) {
+      // Admins see all members (except themselves) as delegated
+      getAllMembers().then((all) => {
+        const others = all
+          .filter((m) => m.name.toLowerCase() !== member.name.toLowerCase())
+          .map((m) => m.name)
+          .sort();
+        setDelegatedGuests(others);
+      });
+    } else {
+      getDelegationsForManager(member.code).then(setDelegatedGuests);
+    }
   }, [member]);
 
   const handleLogin = (m: FamilyMember) => {
