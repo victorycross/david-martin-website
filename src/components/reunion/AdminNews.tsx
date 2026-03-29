@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { getAllMembers } from "@/data/reunion-data";
 import {
   getNews,
   postNews,
@@ -20,11 +22,13 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
   const { toast } = useToast();
   const [news, setNews] = useState<ReunionNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscriberCount, setSubscriberCount] = useState(0);
 
   // Form state
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [pinned, setPinned] = useState(false);
+  const [emailSubscribers, setEmailSubscribers] = useState(false);
   const [posting, setPosting] = useState(false);
 
   const loadNews = useCallback(async () => {
@@ -35,6 +39,10 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
 
   useEffect(() => {
     loadNews();
+    // Count subscribers (members with emails)
+    getAllMembers().then((members) => {
+      setSubscriberCount(members.filter((m) => m.email).length);
+    });
   }, [loadNews]);
 
   const handlePost = async () => {
@@ -48,10 +56,40 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
         body: body.trim(),
         pinned,
       });
-      toast({ title: "Update posted!" });
+
+      // Send email to subscribers if checked
+      if (emailSubscribers) {
+        const members = await getAllMembers();
+        const emails = members.filter((m) => m.email).map((m) => m.email!);
+        if (emails.length > 0) {
+          const { data, error } = await supabase.functions.invoke("send-news", {
+            body: {
+              title: title.trim(),
+              body: body.trim(),
+              recipients: emails,
+            },
+          });
+          if (error) {
+            toast({
+              title: "Update posted, but email failed",
+              description: "The update is on the site but emails couldn't be sent.",
+              variant: "destructive",
+            });
+          } else {
+            const sent = data?.sent ?? emails.length;
+            toast({ title: "Update posted & emailed!", description: `Sent to ${sent} subscriber${sent !== 1 ? "s" : ""}.` });
+          }
+        } else {
+          toast({ title: "Update posted!", description: "No subscribers with email addresses." });
+        }
+      } else {
+        toast({ title: "Update posted!" });
+      }
+
       setTitle("");
       setBody("");
       setPinned(false);
+      setEmailSubscribers(false);
       loadNews();
     } catch (err: any) {
       toast({ title: "Failed to post", description: err?.message, variant: "destructive" });
@@ -105,24 +143,41 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
               rows={3}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={pinned}
-                onChange={(e) => setPinned(e.target.checked)}
-                className="reunion-checkbox"
-              />
-              <span className="reunion-body text-xs opacity-60">
-                Pin to top
-              </span>
-            </label>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={pinned}
+                  onChange={(e) => setPinned(e.target.checked)}
+                  className="reunion-checkbox"
+                />
+                <span className="reunion-body text-xs opacity-60">
+                  Pin to top
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={emailSubscribers}
+                  onChange={(e) => setEmailSubscribers(e.target.checked)}
+                  className="reunion-checkbox"
+                />
+                <span className="reunion-body text-xs opacity-60">
+                  Email to {subscriberCount} subscriber{subscriberCount !== 1 ? "s" : ""} with email on file
+                </span>
+              </label>
+            </div>
             <Button
               onClick={handlePost}
               className="reunion-button"
               disabled={!title.trim() || !body.trim() || posting}
             >
-              {posting ? "Posting..." : "Post Update"}
+              {posting
+                ? emailSubscribers
+                  ? "Posting & emailing..."
+                  : "Posting..."
+                : "Post Update"}
             </Button>
           </div>
         </div>
