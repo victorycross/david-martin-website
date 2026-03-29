@@ -14,7 +14,7 @@ import { AdminDelegation } from "./AdminDelegation";
 import { AdminAddMember } from "./AdminAddMember";
 import { AdminNews } from "./AdminNews";
 
-function CollapsibleSection({ title, description, children, defaultOpen = true }: {
+function CollapsibleSection({ title, description, children, defaultOpen = false }: {
   title: string; description: string; children: ReactNode; defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
