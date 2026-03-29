@@ -1,5 +1,8 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { type FamilyMember } from "@/data/reunion-config";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +10,7 @@ import {
   getInviteUrl,
   getInviteEmailBody,
   getAllInviteLinks,
+  updateMember,
   type RsvpRecord,
 } from "@/data/reunion-data";
 
@@ -14,6 +18,7 @@ interface AdminStatusTableProps {
   allMembers: FamilyMember[];
   rsvps: RsvpRecord[];
   onEditGuest?: (guestName: string) => void;
+  onDataChange?: () => void;
 }
 
 type SortKey = "name" | "status" | "attending";
@@ -28,13 +33,43 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   );
 }
 
-export function AdminStatusTable({ allMembers, rsvps, onEditGuest }: AdminStatusTableProps) {
+export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange }: AdminStatusTableProps) {
   const { toast } = useToast();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [sending, setSending] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [collapsed, setCollapsed] = useState(false);
+
+  // Profile edit dialog
+  const [editingProfile, setEditingProfile] = useState<FamilyMember | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const openProfileEdit = (m: FamilyMember) => {
+    setEditingProfile(m);
+    setEditName(m.name);
+    setEditEmail(m.email || "");
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editingProfile || !editName.trim()) return;
+    setSavingProfile(true);
+    try {
+      await updateMember(editingProfile.code, {
+        name: editName.trim(),
+        email: editEmail.trim() || undefined,
+      });
+      toast({ title: "Profile updated", description: `${editName.trim()} has been saved.` });
+      setEditingProfile(null);
+      onDataChange?.();
+    } catch (err: any) {
+      toast({ title: "Save failed", description: err?.message, variant: "destructive" });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const memberStatus = useMemo(() => {
     const list = allMembers.map((m) => {
@@ -138,9 +173,24 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest }: AdminStatus
               {memberStatus.map((s) => (
                 <tr key={s.member.code}>
                   <td>
-                    <span className="reunion-heading text-sm">{s.member.name}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="reunion-heading text-sm">{s.member.name}</span>
+                      <button
+                        onClick={() => openProfileEdit(s.member)}
+                        className="reunion-invite-btn opacity-0 group-hover:opacity-100"
+                        style={{ opacity: undefined }}
+                        title={`Edit ${s.member.name}'s profile`}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = "")}
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      </button>
+                    </div>
                     {s.member.email && (
-                      <span className="reunion-body text-xs opacity-40 ml-2">{s.member.email}</span>
+                      <span className="reunion-body text-xs opacity-40">{s.member.email}</span>
                     )}
                   </td>
                   <td className="text-center">
@@ -191,6 +241,58 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest }: AdminStatus
           </table>
         </div>
       )}
+
+      {/* Profile edit dialog */}
+      <Dialog open={!!editingProfile} onOpenChange={(open) => !open && setEditingProfile(null)}>
+        <DialogContent className="reunion-dialog">
+          <DialogHeader>
+            <DialogTitle className="reunion-heading text-lg">
+              Edit Profile — {editingProfile?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label className="reunion-label mb-1.5 block">Name</Label>
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="reunion-input"
+              />
+            </div>
+            <div>
+              <Label className="reunion-label mb-1.5 block">
+                Email <span className="opacity-50">(optional)</span>
+              </Label>
+              <Input
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="reunion-input"
+              />
+            </div>
+            <div className="reunion-body text-xs opacity-40">
+              Code: <code className="font-mono">{editingProfile?.code}</code>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleSaveProfile}
+                className="reunion-button flex-1"
+                disabled={!editName.trim() || savingProfile}
+              >
+                {savingProfile ? "Saving..." : "Save"}
+              </Button>
+              <Button
+                onClick={() => setEditingProfile(null)}
+                variant="outline"
+                className="reunion-button-outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -116,7 +116,7 @@ export function AdminPanel({ onBack, adminCode, adminName, onEditGuest }: AdminP
           </TabsList>
 
           <TabsContent value="status" className="mt-6">
-            <AdminStatusTable allMembers={allMembers} rsvps={rsvps} onEditGuest={onEditGuest} />
+            <AdminStatusTable allMembers={allMembers} rsvps={rsvps} onEditGuest={onEditGuest} onDataChange={loadData} />
           </TabsContent>
 
           <TabsContent value="meals" className="mt-6">
