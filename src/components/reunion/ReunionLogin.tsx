@@ -152,6 +152,50 @@ export function ReunionLogin({ onLogin }: ReunionLoginProps) {
           </ul>
         </div>
 
+        {/* Venue & Map */}
+        <div className="reunion-card p-6 sm:p-8 mb-8 overflow-hidden">
+          <h2 className="reunion-heading text-xl mb-4">The Venue</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <h3 className="reunion-heading text-base mb-1">
+                Kelsey&rsquo;s Original Roadhouse
+              </h3>
+              <p className="reunion-body text-sm opacity-60 mb-4">
+                2nd Floor (Private Event Space)
+              </p>
+              <div className="space-y-3 reunion-body text-sm opacity-80">
+                <div className="flex gap-3">
+                  <span className="opacity-50 text-base leading-none mt-0.5">&#x1F4CD;</span>
+                  <span>371 First Street<br />Collingwood, ON L9Y 1B4</span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="opacity-50 text-base leading-none mt-0.5">&#x1F697;</span>
+                  <span>Free parking available onsite</span>
+                </div>
+              </div>
+              <a
+                href="https://maps.apple.com/place?address=371+First+St%2C+Collingwood+ON+L9Y+1B4%2C+Canada&coordinate=44.502019%2C-80.228263&name=Kelseys+Original+Roadhouse"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="reunion-button-outline inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs mt-5"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                </svg>
+                Get Directions
+              </a>
+            </div>
+            <div className="reunion-map-wrap">
+              <iframe
+                title="Kelsey's Original Roadhouse - Collingwood"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-80.2320%2C44.4995%2C-80.2245%2C44.5045&layer=mapnik&marker=44.502019%2C-80.228263"
+                className="reunion-map"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Closing message */}
         <div className="text-center mb-10">
           <p className="reunion-body text-sm opacity-70 leading-relaxed max-w-lg mx-auto mb-4">
