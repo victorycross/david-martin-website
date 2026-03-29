@@ -51,10 +51,10 @@ Deno.serve(async (req) => {
   </div>
   <p style="color:#d4c4b0;font-size:13px;">Your access code: <code style="background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;color:#b8956a;">${code}</code></p>
   <hr style="border:none;border-top:1px solid rgba(184,149,106,0.15);margin:24px 0;"/>
-  <p style="color:#d4c4b0;font-size:12px;text-align:center;opacity:0.6;">With love, Your Family Reunion Planning Committee<br/>Questions? <a href="mailto:ken_jorgensen33@yahoo.ca" style="color:#b8956a;">ken_jorgensen33@yahoo.ca</a> or call 647-882-0275</p>
+  <p style="color:#d4c4b0;font-size:12px;text-align:center;opacity:0.6;">With love, The Jorgensen & Martin Family<br/>Questions? <a href="mailto:ken_jorgensen33@yahoo.ca" style="color:#b8956a;">ken_jorgensen33@yahoo.ca</a> or call 647-882-0275</p>
 </div>`;
 
-    const textBody = `Hi ${name},\n\nYou're invited to the 2026 Family Reunion!\n\nSunday, May 3, 2026 | 3:00-7:00 p.m.\nKelsey's 2nd Floor, 371 First Street, Collingwood, ON\n\nRSVP here: ${inviteUrl}\nYour code: ${code}\n\nPlease respond by April 7, 2026.\n\nWith love,\nYour Family Reunion Planning Committee\nken_jorgensen33@yahoo.ca | 647-882-0275`;
+    const textBody = `Hi ${name},\n\nYou're invited to the 2026 Family Reunion!\n\nSunday, May 3, 2026 | 3:00-7:00 p.m.\nKelsey's 2nd Floor, 371 First Street, Collingwood, ON\n\nRSVP here: ${inviteUrl}\nYour code: ${code}\n\nPlease respond by April 7, 2026.\n\nWith love,\nThe Jorgensen & Martin Family\nken_jorgensen33@yahoo.ca | 647-882-0275`;
 
     // Build MIME message
     const boundary = "----=_Part_" + crypto.randomUUID().replace(/-/g, "");

@@ -301,7 +301,7 @@ export function getInviteEmailBody(member: FamilyMember): string {
     `We hope to see you there!`,
     ``,
     `With love,`,
-    `Your Family Reunion Planning Committee`,
+    `The Jorgensen & Martin Family`,
     ``,
     `Questions? Contact ${eventDetails.contactEmail} or call ${eventDetails.contactPhone}`,
   ].join("\n");

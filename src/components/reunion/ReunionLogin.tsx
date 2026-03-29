@@ -207,7 +207,7 @@ export function ReunionLogin({ onLogin }: ReunionLoginProps) {
             With love,
           </p>
           <p className="reunion-body text-sm opacity-50">
-            Your Family Reunion Planning Committee
+            The Jorgensen &amp; Martin Family
           </p>
         </div>
 
@@ -224,8 +224,8 @@ export function ReunionLogin({ onLogin }: ReunionLoginProps) {
             <div className="text-center mb-8">
               <h2 className="reunion-heading text-xl mb-2">RSVP</h2>
               <p className="reunion-body text-sm opacity-70">
-                Please let us know by {eventDetails.rsvpDeadline} who from your
-                family will be able to join. Enter your access code below.
+                Please RSVP by {eventDetails.rsvpDeadline}. Enter your
+                personal access code below to get started.
               </p>
             </div>
 
