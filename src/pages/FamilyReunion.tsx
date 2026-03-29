@@ -4,7 +4,7 @@ import { RSVPForm } from "@/components/reunion/RSVPForm";
 import { AdminPanel } from "@/components/reunion/AdminPanel";
 import { PhotoGallery } from "@/components/reunion/PhotoGallery";
 import { isAdmin, type FamilyMember } from "@/data/reunion-config";
-import { getDelegationsForManager, getAllMembers } from "@/data/reunion-data";
+import { getDelegationsForManager } from "@/data/reunion-data";
 
 const STORAGE_KEY = "reunion_member";
 
@@ -13,6 +13,8 @@ export default function FamilyReunion() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [activeView, setActiveView] = useState<"rsvp" | "photos">("rsvp");
   const [delegatedGuests, setDelegatedGuests] = useState<string[]>([]);
+  // For admin quick-edit from status table
+  const [editingGuestName, setEditingGuestName] = useState<string | null>(null);
 
   // Set page title
   useEffect(() => {
@@ -31,21 +33,10 @@ export default function FamilyReunion() {
     }
   }, []);
 
-  // Load delegated guests — admins can manage everyone by default
+  // Load delegated guests (non-admin only — admins edit via status table)
   useEffect(() => {
-    if (!member) return;
-    if (isAdmin(member)) {
-      // Admins see all members (except themselves) as delegated
-      getAllMembers().then((all) => {
-        const others = all
-          .filter((m) => m.name.toLowerCase() !== member.name.toLowerCase())
-          .map((m) => m.name)
-          .sort();
-        setDelegatedGuests(others);
-      });
-    } else {
-      getDelegationsForManager(member.code).then(setDelegatedGuests);
-    }
+    if (!member || isAdmin(member)) return;
+    getDelegationsForManager(member.code).then(setDelegatedGuests);
   }, [member]);
 
   const handleLogin = (m: FamilyMember) => {
@@ -58,7 +49,15 @@ export default function FamilyReunion() {
     setShowAdmin(false);
     setActiveView("rsvp");
     setDelegatedGuests([]);
+    setEditingGuestName(null);
     localStorage.removeItem(STORAGE_KEY);
+  };
+
+  // Admin edits a specific guest from the status table
+  const handleEditGuest = (guestName: string) => {
+    setEditingGuestName(guestName);
+    setShowAdmin(false);
+    setActiveView("rsvp");
   };
 
   if (!member) {
@@ -66,7 +65,14 @@ export default function FamilyReunion() {
   }
 
   if (showAdmin && isAdmin(member)) {
-    return <AdminPanel onBack={() => setShowAdmin(false)} adminCode={member.code} adminName={member.name} />;
+    return (
+      <AdminPanel
+        onBack={() => setShowAdmin(false)}
+        adminCode={member.code}
+        adminName={member.name}
+        onEditGuest={handleEditGuest}
+      />
+    );
   }
 
   return (
@@ -77,7 +83,7 @@ export default function FamilyReunion() {
         <div className="relative z-10 max-w-2xl mx-auto pt-6 px-4 flex items-center justify-between">
           <div className="reunion-view-toggle">
             <button
-              onClick={() => setActiveView("rsvp")}
+              onClick={() => { setActiveView("rsvp"); setEditingGuestName(null); }}
               className={`reunion-view-btn ${activeView === "rsvp" ? "reunion-view-btn-active" : ""}`}
             >
               RSVP
@@ -115,6 +121,8 @@ export default function FamilyReunion() {
           isAdmin={isAdmin(member)}
           onShowAdmin={() => setShowAdmin(true)}
           delegatedGuests={delegatedGuests}
+          editingGuestName={editingGuestName}
+          onDoneEditingGuest={() => setEditingGuestName(null)}
         />
       ) : (
         <PhotoGallery member={member} />

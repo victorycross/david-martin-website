@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { eventDetails, type FamilyMember } from "@/data/reunion-config";
 import { GuestRow, type GuestData } from "./GuestRow";
@@ -14,6 +21,8 @@ interface RSVPFormProps {
   isAdmin?: boolean;
   onShowAdmin?: () => void;
   delegatedGuests?: string[];
+  editingGuestName?: string | null;
+  onDoneEditingGuest?: () => void;
 }
 
 const emptyGuest = (): GuestData => ({
@@ -24,7 +33,6 @@ const emptyGuest = (): GuestData => ({
   dessert: "",
 });
 
-// Convert an RsvpRecord from Supabase into the local GuestData format
 function rsvpToGuest(r: RsvpRecord): GuestData {
   return {
     name: r.guest_name,
@@ -41,6 +49,8 @@ export function RSVPForm({
   isAdmin,
   onShowAdmin,
   delegatedGuests = [],
+  editingGuestName,
+  onDoneEditingGuest,
 }: RSVPFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -51,59 +61,79 @@ export function RSVPForm({
     { ...emptyGuest(), name: member.name },
   ]);
 
-  // Track which indices are delegated (immutable name, can't remove)
-  const [delegatedIndices, setDelegatedIndices] = useState<Set<number>>(
-    new Set()
-  );
+  // For delegates: which delegated guest are we editing (null = just self)
+  const [selectedDelegate, setSelectedDelegate] = useState<string | null>(null);
 
-  // Load existing RSVP data + delegated guests on mount
+  // Admin editing a specific guest via status table pencil icon
+  const [adminEditGuest, setAdminEditGuest] = useState<GuestData | null>(null);
+  const [adminEditRsvpCode, setAdminEditRsvpCode] = useState<string | null>(null);
+
+  // Load own RSVP data
   useEffect(() => {
     async function loadExisting() {
       try {
-        // Load own RSVPs
-        const ownRsvps = await getRsvpsForMember(member.code);
-
-        // If admin, load all RSVPs to pre-fill delegated guests
-        let allRsvpMap = new Map<string, RsvpRecord>();
-        if (isAdmin && delegatedGuests.length > 0) {
-          const all = await getAllRsvps();
-          all.forEach((r) => allRsvpMap.set(r.guest_name.toLowerCase(), r));
-        }
-
-        // Build guest list: start with own RSVPs or blank self
-        const guestList: GuestData[] = ownRsvps.length > 0
-          ? ownRsvps.map(rsvpToGuest)
-          : [{ ...emptyGuest(), name: member.name }];
-
-        const hasOwnRsvp = ownRsvps.length > 0;
-
-        // Add delegated guests (pre-filled with their existing RSVPs if any)
-        const existingNames = new Set(guestList.map((g) => g.name.toLowerCase()));
-        const newDelegated = new Set<number>();
-
-        for (const name of delegatedGuests) {
-          if (existingNames.has(name.toLowerCase())) continue;
-          const existingRsvp = allRsvpMap.get(name.toLowerCase());
-          guestList.push(existingRsvp ? rsvpToGuest(existingRsvp) : { ...emptyGuest(), name });
-          newDelegated.add(guestList.length - 1);
-          existingNames.add(name.toLowerCase());
-        }
-
-        setGuests(guestList);
-        setDelegatedIndices(newDelegated);
-
-        // Show confirmation only if the primary member has submitted
-        if (hasOwnRsvp) {
+        const existing = await getRsvpsForMember(member.code);
+        if (existing.length > 0) {
+          setGuests(existing.map(rsvpToGuest));
           setSubmitted(true);
         }
       } catch {
-        // If fetch fails, show blank form
+        // show blank form
       } finally {
         setLoading(false);
       }
     }
     loadExisting();
-  }, [member.code, member.name, isAdmin, delegatedGuests]);
+  }, [member.code]);
+
+  // Admin: load a specific guest for editing when editingGuestName changes
+  useEffect(() => {
+    if (!editingGuestName || !isAdmin) {
+      setAdminEditGuest(null);
+      setAdminEditRsvpCode(null);
+      return;
+    }
+    async function loadGuest() {
+      const all = await getAllRsvps();
+      const match = all.find(
+        (r) => r.guest_name.toLowerCase() === editingGuestName.toLowerCase()
+      );
+      if (match) {
+        setAdminEditGuest(rsvpToGuest(match));
+        setAdminEditRsvpCode(match.family_code);
+      } else {
+        setAdminEditGuest({ ...emptyGuest(), name: editingGuestName });
+        setAdminEditRsvpCode(null);
+      }
+    }
+    loadGuest();
+  }, [editingGuestName, isAdmin]);
+
+  // Delegate: load selected delegate's RSVP
+  const [delegateGuest, setDelegateGuest] = useState<GuestData | null>(null);
+  const [delegateRsvpCode, setDelegateRsvpCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedDelegate) {
+      setDelegateGuest(null);
+      setDelegateRsvpCode(null);
+      return;
+    }
+    async function loadDelegate() {
+      const all = await getAllRsvps();
+      const match = all.find(
+        (r) => r.guest_name.toLowerCase() === selectedDelegate.toLowerCase()
+      );
+      if (match) {
+        setDelegateGuest(rsvpToGuest(match));
+        setDelegateRsvpCode(match.family_code);
+      } else {
+        setDelegateGuest({ ...emptyGuest(), name: selectedDelegate });
+        setDelegateRsvpCode(null);
+      }
+    }
+    loadDelegate();
+  }, [selectedDelegate]);
 
   const updateGuest = (index: number, data: Partial<GuestData>) => {
     setGuests((prev) =>
@@ -116,22 +146,13 @@ export function RSVPForm({
   };
 
   const removeGuest = (index: number) => {
-    if (delegatedIndices.has(index)) return;
+    if (index === 0) return;
     setGuests((prev) => prev.filter((_, i) => i !== index));
-    setDelegatedIndices((prev) => {
-      const newSet = new Set<number>();
-      prev.forEach((di) => {
-        if (di < index) newSet.add(di);
-        else if (di > index) newSet.add(di - 1);
-      });
-      return newSet;
-    });
   };
 
   const isValid = guests.every((g) => {
     if (!g.attending) return false;
-    if (g.attending === "yes" && (!g.starter || !g.mainCourse || !g.dessert))
-      return false;
+    if (g.attending === "yes" && (!g.starter || !g.mainCourse || !g.dessert)) return false;
     if (g.attending === "yes" && !g.name.trim()) return false;
     return true;
   });
@@ -153,39 +174,48 @@ export function RSVPForm({
         submitted_at: new Date().toISOString(),
       }));
 
-      const { error } = await supabase.from("reunion_rsvps" as any).upsert(
+      await supabase.from("reunion_rsvps" as any).upsert(
         rows as any,
         { onConflict: "family_code,guest_name" as any }
       );
 
-      if (error) {
-        console.warn(
-          "Supabase save failed (table may not exist yet):",
-          error.message
-        );
-        console.log("RSVP data that would be saved:", rows);
-      }
-
       setSubmitted(true);
       setEditing(false);
-      toast({
-        title: editing ? "RSVP Updated!" : "RSVP Submitted!",
-        description: "Your response has been recorded. See you there!",
-      });
-    } catch (err) {
-      console.error("Submit error:", err);
+      toast({ title: editing ? "RSVP Updated!" : "RSVP Submitted!", description: "Your response has been recorded." });
+    } catch {
       setSubmitted(true);
       setEditing(false);
-      toast({
-        title: "RSVP Submitted!",
-        description: "Your response has been recorded.",
-      });
+      toast({ title: "RSVP Submitted!", description: "Your response has been recorded." });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Loading state
+  // Save a single guest (admin edit or delegate edit)
+  const handleSaveSingleGuest = async (guest: GuestData, familyCode: string) => {
+    try {
+      await supabase.from("reunion_rsvps" as any).upsert(
+        {
+          family_code: familyCode,
+          family_member: guest.name,
+          guest_name: guest.name,
+          attending: guest.attending === "yes",
+          starter: guest.attending === "yes" ? parseInt(guest.starter) : null,
+          main_course: guest.attending === "yes" ? parseInt(guest.mainCourse) : null,
+          dessert: guest.attending === "yes" ? parseInt(guest.dessert) : null,
+          submitted_at: new Date().toISOString(),
+        } as any,
+        { onConflict: "family_code,guest_name" as any }
+      );
+      toast({ title: `${guest.name}'s RSVP updated!` });
+      if (editingGuestName) onDoneEditingGuest?.();
+      if (selectedDelegate) setSelectedDelegate(null);
+    } catch (err: any) {
+      toast({ title: "Save failed", description: err?.message, variant: "destructive" });
+    }
+  };
+
+  // Loading
   if (loading) {
     return (
       <div className="reunion-page min-h-screen flex items-center justify-center">
@@ -198,7 +228,60 @@ export function RSVPForm({
     );
   }
 
-  // Show confirmation if submitted and not actively editing
+  // Admin editing a specific guest
+  if (adminEditGuest && editingGuestName) {
+    const guestValid = adminEditGuest.attending &&
+      (adminEditGuest.attending === "no" ||
+        (adminEditGuest.starter && adminEditGuest.mainCourse && adminEditGuest.dessert));
+
+    return (
+      <div className="reunion-page min-h-screen py-8 px-4">
+        <div className="reunion-grain" />
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <div className="mb-8">
+            <button
+              onClick={onDoneEditingGuest}
+              className="reunion-body text-xs opacity-50 hover:opacity-80 underline mb-4 block"
+            >
+              &larr; Back
+            </button>
+            <h1 className="reunion-title text-3xl mb-1">
+              Edit {editingGuestName}&rsquo;s RSVP
+            </h1>
+            <p className="reunion-subtitle text-sm tracking-widest uppercase">
+              {eventDetails.title}
+            </p>
+          </div>
+
+          <GuestRow
+            index={0}
+            guest={adminEditGuest}
+            isPrimary={false}
+            isDelegated={true}
+            onChange={(_, data) => setAdminEditGuest((g) => g ? { ...g, ...data } : g)}
+          />
+
+          <div className="mt-6 flex gap-3">
+            <Button
+              onClick={() => handleSaveSingleGuest(
+                adminEditGuest,
+                adminEditRsvpCode || editingGuestName.toLowerCase().replace(/\s+/g, "") + "2026"
+              )}
+              className="reunion-button flex-1"
+              disabled={!guestValid}
+            >
+              Save Changes
+            </Button>
+            <Button onClick={onDoneEditingGuest} variant="outline" className="reunion-button-outline">
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show confirmation if own RSVP submitted and not editing
   if (submitted && !editing) {
     return (
       <RSVPConfirmation
@@ -215,7 +298,6 @@ export function RSVPForm({
       <div className="reunion-grain" />
 
       <div className="relative z-10 max-w-2xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="reunion-title text-3xl sm:text-4xl mb-1">
             {editing ? "Update RSVP" : "RSVP"}
@@ -225,7 +307,6 @@ export function RSVPForm({
           </p>
         </div>
 
-        {/* Event summary bar */}
         <div className="reunion-info-bar mb-8">
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm reunion-body">
             <span>{eventDetails.date}</span>
@@ -239,10 +320,9 @@ export function RSVPForm({
           </p>
         </div>
 
-        {/* News/Updates */}
         <NewsFeed />
 
-        {/* Form */}
+        {/* Own RSVP form */}
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             {guests.map((guest, i) => (
@@ -251,45 +331,23 @@ export function RSVPForm({
                 index={i}
                 guest={guest}
                 isPrimary={i === 0}
-                isDelegated={delegatedIndices.has(i)}
                 onChange={updateGuest}
-                onRemove={
-                  i > 0 && !delegatedIndices.has(i) ? removeGuest : undefined
-                }
+                onRemove={i > 0 ? removeGuest : undefined}
               />
             ))}
           </div>
 
-          {/* Add guest */}
-          <button
-            type="button"
-            onClick={addGuest}
-            className="reunion-add-guest mt-4"
-          >
+          <button type="button" onClick={addGuest} className="reunion-add-guest mt-4">
             <span className="text-lg leading-none">+</span>
             <span>Add a family member</span>
           </button>
 
-          {/* Submit */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button
-              type="submit"
-              className="reunion-button flex-1"
-              disabled={!isValid || submitting}
-            >
-              {submitting
-                ? "Submitting..."
-                : editing
-                ? "Update RSVP"
-                : "Submit RSVP"}
+            <Button type="submit" className="reunion-button flex-1" disabled={!isValid || submitting}>
+              {submitting ? "Submitting..." : editing ? "Update RSVP" : "Submit RSVP"}
             </Button>
             {editing && (
-              <Button
-                type="button"
-                variant="outline"
-                className="reunion-button-outline"
-                onClick={() => setEditing(false)}
-              >
+              <Button type="button" variant="outline" className="reunion-button-outline" onClick={() => setEditing(false)}>
                 Cancel
               </Button>
             )}
@@ -302,14 +360,71 @@ export function RSVPForm({
           )}
         </form>
 
+        {/* Delegate editing section */}
+        {delegatedGuests.length > 0 && !isAdmin && (
+          <div className="mt-10 pt-6 border-t border-white/10">
+            <h2 className="reunion-heading text-lg mb-3">Edit Another Guest</h2>
+            <p className="reunion-body text-xs opacity-50 mb-4">
+              You can manage RSVPs for the following family members.
+            </p>
+            <Select
+              value={selectedDelegate ?? ""}
+              onValueChange={(v) => setSelectedDelegate(v || null)}
+            >
+              <SelectTrigger className="reunion-select">
+                <SelectValue placeholder="Select a guest to edit..." />
+              </SelectTrigger>
+              <SelectContent className="reunion-select-content">
+                {delegatedGuests.sort().map((name) => (
+                  <SelectItem key={name} value={name} className="reunion-select-item">
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {delegateGuest && selectedDelegate && (
+              <div className="mt-4">
+                <GuestRow
+                  index={0}
+                  guest={delegateGuest}
+                  isPrimary={false}
+                  isDelegated={true}
+                  onChange={(_, data) => setDelegateGuest((g) => g ? { ...g, ...data } : g)}
+                />
+                <div className="mt-4 flex gap-3">
+                  <Button
+                    onClick={() => handleSaveSingleGuest(
+                      delegateGuest,
+                      delegateRsvpCode || selectedDelegate.toLowerCase().replace(/\s+/g, "") + "2026"
+                    )}
+                    className="reunion-button flex-1"
+                    disabled={
+                      !delegateGuest.attending ||
+                      (delegateGuest.attending === "yes" &&
+                        (!delegateGuest.starter || !delegateGuest.mainCourse || !delegateGuest.dessert))
+                    }
+                  >
+                    Save {selectedDelegate}&rsquo;s RSVP
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedDelegate(null)}
+                    variant="outline"
+                    className="reunion-button-outline"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-white/10 text-center">
           <p className="reunion-body text-xs opacity-40">
             Questions? Contact{" "}
-            <a
-              href={`mailto:${eventDetails.contactEmail}`}
-              className="underline hover:opacity-80"
-            >
+            <a href={`mailto:${eventDetails.contactEmail}`} className="underline hover:opacity-80">
               {eventDetails.contactEmail}
             </a>{" "}
             or call {eventDetails.contactPhone}

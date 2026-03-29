@@ -13,6 +13,7 @@ import {
 interface AdminStatusTableProps {
   allMembers: FamilyMember[];
   rsvps: RsvpRecord[];
+  onEditGuest?: (guestName: string) => void;
 }
 
 type SortKey = "name" | "status" | "attending";
@@ -27,7 +28,7 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   );
 }
 
-export function AdminStatusTable({ allMembers, rsvps }: AdminStatusTableProps) {
+export function AdminStatusTable({ allMembers, rsvps, onEditGuest }: AdminStatusTableProps) {
   const { toast } = useToast();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [sending, setSending] = useState<string | null>(null);
@@ -143,11 +144,25 @@ export function AdminStatusTable({ allMembers, rsvps }: AdminStatusTableProps) {
                     )}
                   </td>
                   <td className="text-center">
+                    <div className="flex items-center justify-center gap-2">
                     {s.hasResponded ? (
                       <span className="reunion-status-submitted">Submitted</span>
                     ) : (
                       <span className="reunion-status-pending">Pending</span>
                     )}
+                    {onEditGuest && (
+                      <button
+                        onClick={() => onEditGuest(s.member.name)}
+                        className="reunion-invite-btn"
+                        title={`Edit ${s.member.name}'s RSVP`}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                          <path d="m15 5 4 4" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                   </td>
                   <td className="text-center reunion-body text-sm">
                     {s.hasResponded ? `${s.attending} yes${s.declined ? `, ${s.declined} no` : ""}` : "\u2014"}

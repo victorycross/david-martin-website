@@ -38,9 +38,10 @@ interface AdminPanelProps {
   onBack: () => void;
   adminCode?: string;
   adminName?: string;
+  onEditGuest?: (guestName: string) => void;
 }
 
-export function AdminPanel({ onBack, adminCode, adminName }: AdminPanelProps) {
+export function AdminPanel({ onBack, adminCode, adminName, onEditGuest }: AdminPanelProps) {
   const [allMembers, setAllMembers] = useState<FamilyMember[]>([]);
   const [rsvps, setRsvps] = useState<RsvpRecord[]>([]);
   const [delegations, setDelegations] = useState<DelegationAssignment[]>([]);
@@ -115,7 +116,7 @@ export function AdminPanel({ onBack, adminCode, adminName }: AdminPanelProps) {
           </TabsList>
 
           <TabsContent value="status" className="mt-6">
-            <AdminStatusTable allMembers={allMembers} rsvps={rsvps} />
+            <AdminStatusTable allMembers={allMembers} rsvps={rsvps} onEditGuest={onEditGuest} />
           </TabsContent>
 
           <TabsContent value="meals" className="mt-6">
