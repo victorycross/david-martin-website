@@ -14,6 +14,13 @@ export default function FamilyReunion() {
   const [activeView, setActiveView] = useState<"rsvp" | "photos">("rsvp");
   const [delegatedGuests, setDelegatedGuests] = useState<string[]>([]);
 
+  // Set page title
+  useEffect(() => {
+    const original = document.title;
+    document.title = "2026 Family Reunion";
+    return () => { document.title = original; };
+  }, []);
+
   // Restore session from localStorage
   useEffect(() => {
     try {
