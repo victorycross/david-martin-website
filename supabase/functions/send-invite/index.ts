@@ -85,10 +85,21 @@ Deno.serve(async (req) => {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
 
+    // Read until we get a complete SMTP response (final line has space after code, not dash)
     async function readResponse(): Promise<string> {
-      const buf = new Uint8Array(4096);
-      const n = await conn.read(buf);
-      return n ? decoder.decode(buf.subarray(0, n)) : "";
+      let result = "";
+      while (true) {
+        const buf = new Uint8Array(4096);
+        const n = await conn.read(buf);
+        if (!n) break;
+        result += decoder.decode(buf.subarray(0, n));
+        // SMTP multi-line: "250-..." continues, "250 ..." is final
+        const lines = result.trim().split("\r\n");
+        const lastLine = lines[lines.length - 1];
+        if (lastLine.length >= 4 && lastLine[3] === " ") break;
+        if (lastLine.length >= 4 && lastLine[3] !== "-") break;
+      }
+      return result;
     }
 
     async function sendCommand(cmd: string): Promise<string> {
@@ -100,15 +111,29 @@ Deno.serve(async (req) => {
     await readResponse(); // greeting
     await sendCommand("EHLO localhost");
 
-    // AUTH LOGIN
-    await sendCommand("AUTH LOGIN");
-    await sendCommand(btoa(smtpUser));
-    const authResult = await sendCommand(btoa(smtpPass));
-
-    if (!authResult.startsWith("235")) {
+    // AUTH LOGIN (challenge-response: server sends 334 prompts)
+    const authStart = await sendCommand("AUTH LOGIN");
+    if (!authStart.includes("334")) {
       conn.close();
       return new Response(
-        JSON.stringify({ error: "SMTP authentication failed: " + authResult.trim() }),
+        JSON.stringify({ error: "SMTP AUTH not supported: " + authStart.trim() }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const userResp = await sendCommand(btoa(smtpUser));
+    if (!userResp.includes("334")) {
+      conn.close();
+      return new Response(
+        JSON.stringify({ error: "SMTP username rejected: " + userResp.trim() }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const authResult = await sendCommand(btoa(smtpPass));
+
+    if (!authResult.includes("235")) {
+      conn.close();
+      return new Response(
+        JSON.stringify({ error: "SMTP auth failed: " + authResult.trim() }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -122,7 +147,7 @@ Deno.serve(async (req) => {
     await sendCommand("QUIT");
     conn.close();
 
-    if (!dataResult.startsWith("250")) {
+    if (!dataResult.includes("250")) {
       return new Response(
         JSON.stringify({ error: "SMTP send failed: " + dataResult.trim() }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
