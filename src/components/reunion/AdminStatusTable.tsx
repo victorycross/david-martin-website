@@ -145,7 +145,7 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange 
         <button onClick={() => setCollapsed((c) => !c)} className="reunion-heading text-lg text-left flex items-center gap-2">
           <span className={`reunion-collapse-arrow ${collapsed ? "" : "reunion-collapse-arrow-open"}`}>&#x25B6;</span>
           {responded} of {allMembers.length}{" "}
-          <span className="reunion-body text-sm opacity-60">families responded</span>
+          <span className="reunion-body text-sm opacity-60">guests responded</span>
         </button>
         <div className="flex gap-2">
           <Button onClick={copyAllLinks} variant="outline" className="reunion-button-outline text-xs px-3 py-1.5">
