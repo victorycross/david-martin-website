@@ -167,7 +167,36 @@ export function AdminAddMember({ allMembers, onUpdate, adminCode }: AdminAddMemb
       </div>
 
       {/* All members list */}
-      <h3 className="reunion-label mb-3">All Members</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="reunion-label">All Members ({allMembers.length})</h3>
+        <button
+          onClick={() => {
+            const csv = [
+              "Name,Email,Code",
+              ...allMembers.map(
+                (m) =>
+                  `"${m.name}","${m.email || ""}","${m.code}"`
+              ),
+            ].join("\n");
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "reunion-members.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+            toast({ title: "Exported!", description: `${allMembers.length} members exported to CSV.` });
+          }}
+          className="reunion-button-outline inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </svg>
+          Export CSV
+        </button>
+      </div>
       <div className="space-y-2">
         {allMembers.map((m) => (
           <div
