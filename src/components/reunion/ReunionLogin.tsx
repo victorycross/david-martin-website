@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { familyMembers, eventDetails, type FamilyMember } from "@/data/reunion-config";
 import { getAllMembers } from "@/data/reunion-data";
+import { NewsFeed } from "./NewsFeed";
 
 interface ReunionLoginProps {
   onLogin: (member: FamilyMember) => void;
@@ -78,6 +79,9 @@ export function ReunionLogin({ onLogin }: ReunionLoginProps) {
             and making new memories.
           </p>
         </div>
+
+        {/* News/Updates */}
+        <NewsFeed />
 
         {/* Event details card */}
         <div className="reunion-card p-6 sm:p-8 mb-6">

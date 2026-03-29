@@ -622,6 +622,20 @@
   color: #e8ddd0 !important;
 }
 
+/* News */
+.reunion-news-pinned {
+  border-color: rgba(184, 149, 106, 0.25) !important;
+  background: rgba(184, 149, 106, 0.06) !important;
+}
+
+.reunion-news-pin-icon {
+  font-size: 0.85em;
+}
+
+.reunion-checkbox {
+  accent-color: #b8956a;
+}
+
 /* Delegation chips */
 .reunion-delegate-chip {
   font-family: 'Lora', sans-serif;

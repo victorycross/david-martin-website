@@ -12,13 +12,15 @@ import { AdminStatusTable } from "./AdminStatusTable";
 import { AdminMealSummary } from "./AdminMealSummary";
 import { AdminDelegation } from "./AdminDelegation";
 import { AdminAddMember } from "./AdminAddMember";
+import { AdminNews } from "./AdminNews";
 
 interface AdminPanelProps {
   onBack: () => void;
   adminCode?: string;
+  adminName?: string;
 }
 
-export function AdminPanel({ onBack, adminCode }: AdminPanelProps) {
+export function AdminPanel({ onBack, adminCode, adminName }: AdminPanelProps) {
   const [allMembers, setAllMembers] = useState<FamilyMember[]>([]);
   const [rsvps, setRsvps] = useState<RsvpRecord[]>([]);
   const [delegations, setDelegations] = useState<DelegationAssignment[]>([]);
@@ -87,6 +89,9 @@ export function AdminPanel({ onBack, adminCode }: AdminPanelProps) {
             <TabsTrigger value="manage" className="reunion-tab-trigger">
               Manage
             </TabsTrigger>
+            <TabsTrigger value="news" className="reunion-tab-trigger">
+              News
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="status" className="mt-6">
@@ -123,6 +128,17 @@ export function AdminPanel({ onBack, adminCode }: AdminPanelProps) {
               </p>
               <AdminAddMember allMembers={allMembers} onUpdate={loadData} adminCode={adminCode} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="news" className="mt-6">
+            <h2 className="reunion-heading text-xl mb-4">
+              News &amp; Updates
+            </h2>
+            <p className="reunion-body text-sm opacity-60 mb-4">
+              Post updates that appear on the reunion front page for all
+              family members to see.
+            </p>
+            <AdminNews adminCode={adminCode ?? ""} adminName={adminName ?? "Admin"} />
           </TabsContent>
         </Tabs>
       </div>
