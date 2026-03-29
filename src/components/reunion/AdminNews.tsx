@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getSubscribedEmails } from "@/data/reunion-data";
+import { getSubscribedEmails, getSubscriberDetails, type SubscriberInfo } from "@/data/reunion-data";
 import {
   getNews,
   postNews,
@@ -23,6 +23,8 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
   const [news, setNews] = useState<ReunionNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [subscriberCount, setSubscriberCount] = useState(0);
+  const [subscribers, setSubscribers] = useState<SubscriberInfo[]>([]);
+  const [showSubscribers, setShowSubscribers] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -39,9 +41,10 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
 
   useEffect(() => {
     loadNews();
-    // Count opted-in subscribers
-    getSubscribedEmails().then((emails) => {
-      setSubscriberCount(emails.length);
+    // Load subscribers
+    getSubscriberDetails().then((subs) => {
+      setSubscribers(subs);
+      setSubscriberCount(subs.length);
     });
   }, [loadNews]);
 
@@ -155,17 +158,39 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
                   Pin to top
                 </span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={emailSubscribers}
-                  onChange={(e) => setEmailSubscribers(e.target.checked)}
-                  className="reunion-checkbox"
-                />
-                <span className="reunion-body text-xs opacity-60">
-                  Email to {subscriberCount} subscriber{subscriberCount !== 1 ? "s" : ""} with email on file
-                </span>
-              </label>
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={emailSubscribers}
+                    onChange={(e) => setEmailSubscribers(e.target.checked)}
+                    className="reunion-checkbox"
+                  />
+                  <span className="reunion-body text-xs opacity-60">
+                    Email to{" "}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); setShowSubscribers((s) => !s); }}
+                      className="underline hover:opacity-80"
+                    >
+                      {subscriberCount} subscriber{subscriberCount !== 1 ? "s" : ""}
+                    </button>
+                  </span>
+                </label>
+                {showSubscribers && (
+                  <div className="mt-2 ml-6 reunion-body text-xs opacity-50 space-y-1">
+                    {subscribers.length === 0 ? (
+                      <p>No subscribers yet. Guests can opt in from their RSVP confirmation page.</p>
+                    ) : (
+                      subscribers.map((s) => (
+                        <p key={s.code}>
+                          {s.name} &mdash; <span className="opacity-70">{s.email}</span>
+                        </p>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <Button
               onClick={handlePost}

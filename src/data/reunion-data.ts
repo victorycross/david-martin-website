@@ -355,6 +355,31 @@ export async function getSubscribedEmails(): Promise<string[]> {
   }
 }
 
+export interface SubscriberInfo {
+  name: string;
+  email: string;
+  code: string;
+}
+
+export async function getSubscriberDetails(): Promise<SubscriberInfo[]> {
+  try {
+    const { data } = await supabase
+      .from("reunion_subscriptions" as any)
+      .select("family_code")
+      .eq("subscribed", true) as any;
+    if (!data?.length) return [];
+
+    const members = await getAllMembers();
+    const subscribedCodes = new Set(data.map((d: any) => d.family_code.toLowerCase()));
+    return members
+      .filter((m) => m.email && subscribedCodes.has(m.code.toLowerCase()))
+      .map((m) => ({ name: m.name, email: m.email!, code: m.code }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  } catch {
+    return [];
+  }
+}
+
 // ─── Invite helpers ─────────────────────────────────────────────────────────
 
 const SITE_URL = "https://david-martin.ca";
