@@ -622,6 +622,35 @@
   color: #e8ddd0 !important;
 }
 
+/* Delegation chips */
+.reunion-delegate-chip {
+  font-family: 'Lora', sans-serif;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(184, 149, 106, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(184, 149, 106, 0.5);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.reunion-delegate-chip:hover {
+  border-color: rgba(184, 149, 106, 0.3);
+  color: rgba(184, 149, 106, 0.8);
+  background: rgba(184, 149, 106, 0.06);
+}
+
+.reunion-delegate-chip-active {
+  background: rgba(184, 149, 106, 0.15) !important;
+  border-color: rgba(184, 149, 106, 0.4) !important;
+  color: #f0e6d8 !important;
+}
+
+.reunion-delegate-chip-active:hover {
+  background: rgba(184, 149, 106, 0.1) !important;
+}
+
 /* ===== View Toggle (RSVP / Photos) ===== */
 
 .reunion-view-toggle {

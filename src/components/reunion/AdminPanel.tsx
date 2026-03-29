@@ -15,9 +15,10 @@ import { AdminAddMember } from "./AdminAddMember";
 
 interface AdminPanelProps {
   onBack: () => void;
+  adminCode?: string;
 }
 
-export function AdminPanel({ onBack }: AdminPanelProps) {
+export function AdminPanel({ onBack, adminCode }: AdminPanelProps) {
   const [allMembers, setAllMembers] = useState<FamilyMember[]>([]);
   const [rsvps, setRsvps] = useState<RsvpRecord[]>([]);
   const [delegations, setDelegations] = useState<DelegationAssignment[]>([]);
@@ -120,7 +121,7 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
                 Add new people to the RSVP system. They&rsquo;ll receive an
                 access code to log in.
               </p>
-              <AdminAddMember allMembers={allMembers} onUpdate={loadData} />
+              <AdminAddMember allMembers={allMembers} onUpdate={loadData} adminCode={adminCode} />
             </div>
           </TabsContent>
         </Tabs>

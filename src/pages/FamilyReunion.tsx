@@ -48,7 +48,7 @@ export default function FamilyReunion() {
   }
 
   if (showAdmin && isAdmin(member)) {
-    return <AdminPanel onBack={() => setShowAdmin(false)} />;
+    return <AdminPanel onBack={() => setShowAdmin(false)} adminCode={member.code} />;
   }
 
   return (

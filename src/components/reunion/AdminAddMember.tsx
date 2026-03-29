@@ -13,11 +13,12 @@ import { addMember, updateMember } from "@/data/reunion-data";
 import { familyMembers, type FamilyMember } from "@/data/reunion-config";
 
 interface AdminAddMemberProps {
+  adminCode?: string;
   allMembers: FamilyMember[];
   onUpdate: () => void;
 }
 
-export function AdminAddMember({ allMembers, onUpdate }: AdminAddMemberProps) {
+export function AdminAddMember({ allMembers, onUpdate, adminCode }: AdminAddMemberProps) {
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -48,7 +49,7 @@ export function AdminAddMember({ allMembers, onUpdate }: AdminAddMemberProps) {
     setAdding(true);
     setError("");
     try {
-      const member = await addMember(trimmed);
+      const member = await addMember(trimmed, adminCode);
       setLastAdded(member);
       setName("");
       onUpdate();

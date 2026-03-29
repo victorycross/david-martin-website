@@ -92,7 +92,7 @@ function mergeMembers(staticMembers: FamilyMember[], dynamicMembers: FamilyMembe
   return result;
 }
 
-export async function addMember(name: string): Promise<FamilyMember> {
+export async function addMember(name: string, addedBy?: string): Promise<FamilyMember> {
   const code = name.toLowerCase().replace(/\s+/g, "") + "2026";
   const member: FamilyMember = { code, name };
 
@@ -104,10 +104,10 @@ export async function addMember(name: string): Promise<FamilyMember> {
     writeLS(LS_DYNAMIC_MEMBERS, dynamic);
   }
 
-  // Try Supabase
+  // Try Supabase — track who added this member
   try {
     await supabase.from("reunion_members" as any).upsert(
-      { code, name, added_by: "david2026", created_at: new Date().toISOString() } as any,
+      { code, name, added_by: addedBy ?? "unknown", created_at: new Date().toISOString() } as any,
       { onConflict: "code" as any }
     );
   } catch {
@@ -197,42 +197,83 @@ export async function getDelegationsForManager(managerCode: string): Promise<str
     .map((d) => d.delegateName);
 }
 
-export async function setDelegation(delegateName: string, managerCode: string): Promise<void> {
-  // Update localStorage
+// Set delegations for a person — replaces all existing assignments with new list.
+// managerCodes is an array of codes (empty = self-only, no delegations).
+export async function setDelegationsForPerson(
+  delegateName: string,
+  managerCodes: string[]
+): Promise<void> {
+  // Update localStorage — remove old, add new
   const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
   const filtered = all.filter((d) => d.delegateName !== delegateName);
-  filtered.push({ delegateName, managerCode });
+  for (const code of managerCodes) {
+    filtered.push({ delegateName, managerCode: code });
+  }
   writeLS(LS_DELEGATIONS, filtered);
 
-  // Try Supabase
-  try {
-    await supabase.from("reunion_delegations" as any).upsert(
-      {
-        delegate_name: delegateName,
-        manager_code: managerCode,
-        assigned_by: "david2026",
-        created_at: new Date().toISOString(),
-      } as any,
-      { onConflict: "delegate_name" as any }
-    );
-  } catch {
-    // localStorage fallback handled
-  }
-}
-
-export async function removeDelegation(delegateName: string): Promise<void> {
-  // Update localStorage
-  const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
-  writeLS(LS_DELEGATIONS, all.filter((d) => d.delegateName !== delegateName));
-
-  // Try Supabase
+  // Try Supabase — delete all for this person, then insert new
   try {
     await supabase
       .from("reunion_delegations" as any)
       .delete()
       .eq("delegate_name", delegateName);
+    if (managerCodes.length > 0) {
+      await supabase.from("reunion_delegations" as any).insert(
+        managerCodes.map((code) => ({
+          delegate_name: delegateName,
+          manager_code: code,
+          assigned_by: "admin",
+          created_at: new Date().toISOString(),
+        })) as any
+      );
+    }
   } catch {
     // localStorage fallback handled
+  }
+}
+
+// Legacy single-manager setter (still used by some code paths)
+export async function setDelegation(delegateName: string, managerCode: string): Promise<void> {
+  const all = await getAllDelegations();
+  const existing = all
+    .filter((d) => d.delegateName === delegateName)
+    .map((d) => d.managerCode);
+  if (!existing.includes(managerCode)) {
+    await setDelegationsForPerson(delegateName, [...existing, managerCode]);
+  }
+}
+
+export async function removeDelegation(delegateName: string, managerCode?: string): Promise<void> {
+  if (!managerCode) {
+    // Remove ALL delegations for this person
+    const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
+    writeLS(LS_DELEGATIONS, all.filter((d) => d.delegateName !== delegateName));
+    try {
+      await supabase
+        .from("reunion_delegations" as any)
+        .delete()
+        .eq("delegate_name", delegateName);
+    } catch {
+      // fallback handled
+    }
+  } else {
+    // Remove specific manager for this person
+    const all = readLS<DelegationAssignment>(LS_DELEGATIONS, []);
+    writeLS(
+      LS_DELEGATIONS,
+      all.filter(
+        (d) => !(d.delegateName === delegateName && d.managerCode === managerCode)
+      )
+    );
+    try {
+      await supabase
+        .from("reunion_delegations" as any)
+        .delete()
+        .eq("delegate_name", delegateName)
+        .eq("manager_code", managerCode);
+    } catch {
+      // fallback handled
+    }
   }
 }
 

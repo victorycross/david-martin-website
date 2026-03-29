@@ -1,16 +1,9 @@
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { ADMIN_CODES, type FamilyMember } from "@/data/reunion-config";
 import {
-  setDelegation,
-  removeDelegation,
+  setDelegationsForPerson,
   type DelegationAssignment,
 } from "@/data/reunion-data";
 
@@ -25,36 +18,49 @@ export function AdminDelegation({
   delegations,
   onUpdate,
 }: AdminDelegationProps) {
+  const { toast } = useToast();
   const [saving, setSaving] = useState<string | null>(null);
 
-  // Members who can be managers (everyone)
+  // All members can be delegated (including admins — they might want someone
+  // else to also RSVP for their kids, etc.)
+  const delegateable = allMembers;
+
+  // All members can be managers
   const managers = allMembers;
 
-  // Members who can be delegated (everyone except David)
-  const delegateable = allMembers.filter(
-    (m) => !ADMIN_CODES.includes(m.code.toLowerCase())
-  );
-
-  const getManagerFor = (memberName: string): string => {
-    const d = delegations.find((d) => d.delegateName === memberName);
-    return d?.managerCode ?? "self";
+  // Get current manager codes for a given delegate
+  const getManagersFor = (memberName: string): string[] => {
+    return delegations
+      .filter((d) => d.delegateName === memberName)
+      .map((d) => d.managerCode);
   };
 
-  const handleChange = async (delegateName: string, value: string) => {
+  const toggleManager = async (
+    delegateName: string,
+    managerCode: string,
+    currentManagers: string[]
+  ) => {
     setSaving(delegateName);
     try {
-      if (value === "self") {
-        await removeDelegation(delegateName);
-      } else {
-        await setDelegation(delegateName, value);
-      }
+      const newManagers = currentManagers.includes(managerCode)
+        ? currentManagers.filter((c) => c !== managerCode)
+        : [...currentManagers, managerCode];
+      await setDelegationsForPerson(delegateName, newManagers);
       onUpdate();
+      const managerName = managers.find(
+        (m) => m.code === managerCode
+      )?.name;
+      if (newManagers.includes(managerCode)) {
+        toast({
+          title: `${managerName} can now manage ${delegateName}`,
+        });
+      }
     } finally {
       setSaving(null);
     }
   };
 
-  // Group by manager for the summary view
+  // Group by manager for summary
   const managerGroups = managers
     .map((m) => ({
       manager: m,
@@ -69,60 +75,65 @@ export function AdminDelegation({
       {/* Summary */}
       {managerGroups.length > 0 && (
         <div className="reunion-info-bar mb-6">
-          <p className="reunion-label mb-2">Current Assignments</p>
+          <p className="reunion-label mb-3">Current Assignments</p>
           {managerGroups.map((g) => (
-            <p key={g.manager.code} className="reunion-body text-sm mb-1">
-              <span className="reunion-heading text-sm">{g.manager.name}</span>{" "}
-              manages:{" "}
+            <div key={g.manager.code} className="reunion-body text-sm mb-2 flex items-start gap-2">
+              <span className="reunion-heading text-sm whitespace-nowrap">
+                {g.manager.name}
+              </span>
+              <span className="opacity-40">&rarr;</span>
               <span className="opacity-70">{g.delegates.join(", ")}</span>
-            </p>
+            </div>
           ))}
         </div>
       )}
 
-      {/* Assignment controls */}
+      {/* Assignment grid */}
       <div className="space-y-3">
-        {delegateable.map((member) => (
-          <div
-            key={member.code}
-            className="reunion-guest-row flex items-center justify-between gap-4"
-          >
-            <span className="reunion-heading text-sm flex-shrink-0 min-w-[100px]">
-              {member.name}
-            </span>
+        {delegateable.map((member) => {
+          const currentManagers = getManagersFor(member.name);
+          const isSaving = saving === member.name;
 
-            <div className="flex items-center gap-2 flex-1 max-w-[250px]">
-              <Label className="reunion-label text-xs whitespace-nowrap">
-                Managed by:
-              </Label>
-              <Select
-                value={getManagerFor(member.name)}
-                onValueChange={(v) => handleChange(member.name, v)}
-                disabled={saving === member.name}
-              >
-                <SelectTrigger className="reunion-select text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="reunion-select-content">
-                  <SelectItem value="self" className="reunion-select-item">
-                    Self
-                  </SelectItem>
-                  {managers
-                    .filter((m) => m.name !== member.name)
-                    .map((m) => (
-                      <SelectItem
-                        key={m.code}
-                        value={m.code}
-                        className="reunion-select-item"
+          return (
+            <div key={member.code} className="reunion-guest-row">
+              <div className="flex items-center justify-between mb-3">
+                <span className="reunion-heading text-sm">
+                  {member.name}
+                </span>
+                {currentManagers.length === 0 ? (
+                  <span className="reunion-body text-xs opacity-40">
+                    Self only
+                  </span>
+                ) : (
+                  <span className="reunion-body text-xs opacity-50">
+                    {currentManagers.length} manager{currentManagers.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {managers
+                  .filter((m) => m.name !== member.name)
+                  .map((mgr) => {
+                    const isActive = currentManagers.includes(mgr.code);
+                    return (
+                      <button
+                        key={mgr.code}
+                        onClick={() =>
+                          toggleManager(member.name, mgr.code, currentManagers)
+                        }
+                        disabled={isSaving}
+                        className={`reunion-delegate-chip ${
+                          isActive ? "reunion-delegate-chip-active" : ""
+                        }`}
                       >
-                        {m.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+                        {mgr.name}
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
