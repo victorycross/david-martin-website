@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getAllMembers } from "@/data/reunion-data";
+import { getSubscribedEmails } from "@/data/reunion-data";
 import {
   getNews,
   postNews,
@@ -39,9 +39,9 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
 
   useEffect(() => {
     loadNews();
-    // Count subscribers (members with emails)
-    getAllMembers().then((members) => {
-      setSubscriberCount(members.filter((m) => m.email).length);
+    // Count opted-in subscribers
+    getSubscribedEmails().then((emails) => {
+      setSubscriberCount(emails.length);
     });
   }, [loadNews]);
 
@@ -57,10 +57,9 @@ export function AdminNews({ adminCode, adminName }: AdminNewsProps) {
         pinned,
       });
 
-      // Send email to subscribers if checked
+      // Send email to opted-in subscribers if checked
       if (emailSubscribers) {
-        const members = await getAllMembers();
-        const emails = members.filter((m) => m.email).map((m) => m.email!);
+        const emails = await getSubscribedEmails();
         if (emails.length > 0) {
           const { data, error } = await supabase.functions.invoke("send-news", {
             body: {

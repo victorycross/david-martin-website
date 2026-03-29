@@ -315,6 +315,46 @@ export function getMenuItemName(
   return options.find((o) => o.id === id)?.name ?? "\u2014";
 }
 
+// ─── Email subscriptions ────────────────────────────────────────────────────
+
+export async function getSubscription(familyCode: string): Promise<boolean> {
+  try {
+    const { data } = await supabase
+      .from("reunion_subscriptions" as any)
+      .select("subscribed")
+      .eq("family_code", familyCode)
+      .single() as any;
+    return data?.subscribed ?? false;
+  } catch {
+    return false;
+  }
+}
+
+export async function setSubscription(familyCode: string, subscribed: boolean): Promise<void> {
+  await supabase.from("reunion_subscriptions" as any).upsert(
+    { family_code: familyCode, subscribed, updated_at: new Date().toISOString() } as any,
+    { onConflict: "family_code" as any }
+  );
+}
+
+export async function getSubscribedEmails(): Promise<string[]> {
+  try {
+    const { data } = await supabase
+      .from("reunion_subscriptions" as any)
+      .select("family_code")
+      .eq("subscribed", true) as any;
+    if (!data?.length) return [];
+
+    const members = await getAllMembers();
+    const subscribedCodes = new Set(data.map((d: any) => d.family_code.toLowerCase()));
+    return members
+      .filter((m) => m.email && subscribedCodes.has(m.code.toLowerCase()))
+      .map((m) => m.email!);
+  } catch {
+    return [];
+  }
+}
+
 // ─── Invite helpers ─────────────────────────────────────────────────────────
 
 const SITE_URL = "https://david-martin.ca";

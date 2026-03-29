@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { eventDetails, starterOptions, mainCourseOptions, dessertOptions } from "@/data/reunion-config";
+import { eventDetails, starterOptions, mainCourseOptions, dessertOptions, type FamilyMember } from "@/data/reunion-config";
+import { getSubscription, setSubscription } from "@/data/reunion-data";
 import type { GuestData } from "./GuestRow";
 import { NewsFeed } from "./NewsFeed";
 
@@ -8,15 +10,34 @@ interface RSVPConfirmationProps {
   onEdit: () => void;
   onLogout: () => void;
   isUpdate?: boolean;
+  member?: FamilyMember;
 }
 
 function getMealName(options: { id: number; name: string }[], id: string) {
   return options.find((o) => String(o.id) === id)?.name ?? "\u2014";
 }
 
-export function RSVPConfirmation({ guests, onEdit, onLogout, isUpdate }: RSVPConfirmationProps) {
+export function RSVPConfirmation({ guests, onEdit, onLogout, isUpdate, member }: RSVPConfirmationProps) {
   const attending = guests.filter((g) => g.attending === "yes");
   const notAttending = guests.filter((g) => g.attending === "no");
+
+  const [subscribed, setSubscribed] = useState(false);
+  const [loadingSub, setLoadingSub] = useState(true);
+
+  useEffect(() => {
+    if (!member) { setLoadingSub(false); return; }
+    getSubscription(member.code).then((val) => {
+      setSubscribed(val);
+      setLoadingSub(false);
+    });
+  }, [member]);
+
+  const handleToggleSub = async () => {
+    if (!member) return;
+    const newVal = !subscribed;
+    setSubscribed(newVal);
+    await setSubscription(member.code, newVal);
+  };
 
   return (
     <div className="reunion-page min-h-screen flex items-center justify-center py-12 px-4">
@@ -75,6 +96,28 @@ export function RSVPConfirmation({ guests, onEdit, onLogout, isUpdate }: RSVPCon
             <p>{eventDetails.location} &mdash; {eventDetails.address}</p>
           </div>
         </div>
+
+        {/* Email subscription opt-in */}
+        {member?.email && !loadingSub && (
+          <div className="mt-6">
+            <label className="reunion-card p-4 flex items-center gap-3 cursor-pointer text-left">
+              <input
+                type="checkbox"
+                checked={subscribed}
+                onChange={handleToggleSub}
+                className="reunion-checkbox w-4 h-4 flex-shrink-0"
+              />
+              <div>
+                <span className="reunion-body text-sm">
+                  Email me updates
+                </span>
+                <p className="reunion-body text-xs opacity-40 mt-0.5">
+                  Receive reunion news and announcements at {member.email}
+                </p>
+              </div>
+            </label>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">

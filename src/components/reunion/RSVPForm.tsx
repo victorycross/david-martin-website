@@ -289,6 +289,7 @@ export function RSVPForm({
         onEdit={() => setEditing(true)}
         onLogout={onLogout}
         isUpdate={true}
+        member={member}
       />
     );
   }
