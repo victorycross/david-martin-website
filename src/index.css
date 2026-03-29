@@ -502,6 +502,18 @@
   color: rgba(184, 149, 106, 0.8) !important;
 }
 
+/* Collapsible arrow */
+.reunion-collapse-arrow {
+  display: inline-block;
+  font-size: 0.6rem;
+  color: rgba(184, 149, 106, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.reunion-collapse-arrow-open {
+  transform: rotate(90deg);
+}
+
 .reunion-admin-table {
   border-collapse: separate;
   border-spacing: 0;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { eventDetails, type FamilyMember } from "@/data/reunion-config";
 import {
@@ -13,6 +13,26 @@ import { AdminMealSummary } from "./AdminMealSummary";
 import { AdminDelegation } from "./AdminDelegation";
 import { AdminAddMember } from "./AdminAddMember";
 import { AdminNews } from "./AdminNews";
+
+function CollapsibleSection({ title, description, children, defaultOpen = true }: {
+  title: string; description: string; children: ReactNode; defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 mb-2 text-left w-full">
+        <span className={`reunion-collapse-arrow ${open ? "reunion-collapse-arrow-open" : ""}`}>&#x25B6;</span>
+        <h2 className="reunion-heading text-xl">{title}</h2>
+      </button>
+      {open && (
+        <>
+          <p className="reunion-body text-sm opacity-60 mb-4 ml-5">{description}</p>
+          <div className="ml-0">{children}</div>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface AdminPanelProps {
   onBack: () => void;
@@ -103,42 +123,34 @@ export function AdminPanel({ onBack, adminCode, adminName }: AdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="manage" className="mt-6 space-y-8">
-            <div>
-              <h2 className="reunion-heading text-xl mb-4">
-                Guest Delegation
-              </h2>
-              <p className="reunion-body text-sm opacity-60 mb-4">
-                Assign family members to be managed by another person. The
-                manager will see delegated guests on their RSVP form.
-              </p>
+            <CollapsibleSection
+              title="Guest Delegation"
+              description="Assign family members to be managed by another person. The manager will see delegated guests on their RSVP form."
+            >
               <AdminDelegation
                 allMembers={allMembers}
                 delegations={delegations}
                 onUpdate={loadData}
               />
-            </div>
+            </CollapsibleSection>
 
-            <div className="pt-6 border-t border-white/10">
-              <h2 className="reunion-heading text-xl mb-4">
-                Add Family Members
-              </h2>
-              <p className="reunion-body text-sm opacity-60 mb-4">
-                Add new people to the RSVP system. They&rsquo;ll receive an
-                access code to log in.
-              </p>
-              <AdminAddMember allMembers={allMembers} onUpdate={loadData} adminCode={adminCode} />
+            <div className="border-t border-white/10 pt-6">
+              <CollapsibleSection
+                title="Add Family Members"
+                description="Add new people to the RSVP system. They'll receive an access code to log in."
+              >
+                <AdminAddMember allMembers={allMembers} onUpdate={loadData} adminCode={adminCode} />
+              </CollapsibleSection>
             </div>
           </TabsContent>
 
           <TabsContent value="news" className="mt-6">
-            <h2 className="reunion-heading text-xl mb-4">
-              News &amp; Updates
-            </h2>
-            <p className="reunion-body text-sm opacity-60 mb-4">
-              Post updates that appear on the reunion front page for all
-              family members to see.
-            </p>
-            <AdminNews adminCode={adminCode ?? ""} adminName={adminName ?? "Admin"} />
+            <CollapsibleSection
+              title="News &amp; Updates"
+              description="Post updates that appear on the reunion page for all family members to see."
+            >
+              <AdminNews adminCode={adminCode ?? ""} adminName={adminName ?? "Admin"} />
+            </CollapsibleSection>
           </TabsContent>
         </Tabs>
       </div>
