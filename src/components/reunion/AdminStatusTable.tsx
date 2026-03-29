@@ -73,13 +73,15 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange 
 
   const memberStatus = useMemo(() => {
     const list = allMembers.map((m) => {
-      const memberRsvps = rsvps.filter(
-        (r) => r.family_code.toLowerCase() === m.code.toLowerCase()
+      // Find this person's RSVP by guest_name (not family_code)
+      // so each person shows their own status regardless of who submitted for them
+      const myRsvp = rsvps.find(
+        (r) => r.guest_name.toLowerCase() === m.name.toLowerCase()
       );
-      const hasResponded = memberRsvps.length > 0;
-      const attending = memberRsvps.filter((r) => r.attending).length;
-      const declined = memberRsvps.filter((r) => !r.attending).length;
-      return { member: m, hasResponded, attending, declined, total: memberRsvps.length };
+      const hasResponded = !!myRsvp;
+      const attending = myRsvp?.attending ? 1 : 0;
+      const declined = myRsvp && !myRsvp.attending ? 1 : 0;
+      return { member: m, hasResponded, attending, declined, total: hasResponded ? 1 : 0 };
     });
 
     list.sort((a, b) => {
@@ -210,7 +212,11 @@ export function AdminStatusTable({ allMembers, rsvps, onEditGuest, onDataChange 
                   </div>
                   </td>
                   <td className="text-center reunion-body text-sm">
-                    {s.hasResponded ? `${s.attending} yes${s.declined ? `, ${s.declined} no` : ""}` : "\u2014"}
+                    {s.hasResponded
+                      ? s.attending
+                        ? <span className="opacity-80">Yes</span>
+                        : <span className="opacity-50">No</span>
+                      : "\u2014"}
                   </td>
                   <td className="text-right">
                     <div className="flex items-center justify-end gap-1.5">
