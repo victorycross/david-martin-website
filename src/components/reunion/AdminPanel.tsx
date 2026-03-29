@@ -13,6 +13,7 @@ import { AdminMealSummary } from "./AdminMealSummary";
 import { AdminDelegation } from "./AdminDelegation";
 import { AdminAddMember } from "./AdminAddMember";
 import { AdminNews } from "./AdminNews";
+import { AdminHelp } from "./AdminHelp";
 
 function CollapsibleSection({ title, description, children, defaultOpen = false }: {
   title: string; description: string; children: ReactNode; defaultOpen?: boolean;
@@ -46,6 +47,7 @@ export function AdminPanel({ onBack, adminCode, adminName, onEditGuest }: AdminP
   const [rsvps, setRsvps] = useState<RsvpRecord[]>([]);
   const [delegations, setDelegations] = useState<DelegationAssignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
 
   const loadData = useCallback(async () => {
     const [members, rsvpData, delegationData] = await Promise.all([
@@ -90,15 +92,31 @@ export function AdminPanel({ onBack, adminCode, adminName, onEditGuest }: AdminP
               {eventDetails.title}
             </p>
           </div>
-          <button
-            onClick={onBack}
-            className="reunion-button-outline px-4 py-2 rounded-lg text-sm"
-          >
-            My RSVP
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowHelp((h) => !h)}
+              className="reunion-invite-btn"
+              title="Admin Guide"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <path d="M12 17h.01" />
+              </svg>
+            </button>
+            <button
+              onClick={onBack}
+              className="reunion-button-outline px-4 py-2 rounded-lg text-sm"
+            >
+              My RSVP
+            </button>
+          </div>
         </div>
 
-        {/* Tabs */}
+        {showHelp ? (
+          <AdminHelp />
+        ) : (
+        /* Tabs */
         <Tabs defaultValue="status" className="reunion-tabs">
           <TabsList className="reunion-tabs-list">
             <TabsTrigger value="status" className="reunion-tab-trigger">
@@ -154,6 +172,7 @@ export function AdminPanel({ onBack, adminCode, adminName, onEditGuest }: AdminP
             </CollapsibleSection>
           </TabsContent>
         </Tabs>
+        )}
       </div>
     </div>
   );
