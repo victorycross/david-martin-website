@@ -1,132 +1,69 @@
 import { useState, useEffect } from "react";
-import { ReunionLogin } from "@/components/reunion/ReunionLogin";
-import { RSVPForm } from "@/components/reunion/RSVPForm";
+import { ReunionThankYou } from "@/components/reunion/ReunionThankYou";
+import { ReunionPortal } from "@/components/reunion/ReunionPortal";
 import { AdminPanel } from "@/components/reunion/AdminPanel";
-import { PhotoGallery } from "@/components/reunion/PhotoGallery";
 import { isAdmin, type FamilyMember } from "@/data/reunion-config";
-import { getDelegationsForManager } from "@/data/reunion-data";
 
 const STORAGE_KEY = "reunion_member";
 
-export default function FamilyReunion() {
-  const [member, setMember] = useState<FamilyMember | null>(null);
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [activeView, setActiveView] = useState<"rsvp" | "photos">("rsvp");
-  const [delegatedGuests, setDelegatedGuests] = useState<string[]>([]);
-  // For admin quick-edit from status table
-  const [editingGuestName, setEditingGuestName] = useState<string | null>(null);
+type View = "thankyou" | "portal" | "admin";
 
-  // Set page title
+export default function FamilyReunion() {
+  const [view, setView] = useState<View>("thankyou");
+  const [member, setMember] = useState<FamilyMember | null>(null);
+
   useEffect(() => {
     const original = document.title;
     document.title = "2026 Family Reunion";
     return () => { document.title = original; };
   }, []);
 
-  // Restore session from localStorage
+  // Restore session but only show portal if they had authenticated before
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setMember(JSON.parse(saved));
+      if (saved) {
+        const m: FamilyMember = JSON.parse(saved);
+        setMember(m);
+        setView("portal");
+      }
     } catch {
       // ignore
     }
   }, []);
 
-  // Load delegated guests (non-admin only — admins edit via status table)
-  useEffect(() => {
-    if (!member || isAdmin(member)) return;
-    getDelegationsForManager(member.code).then(setDelegatedGuests);
-  }, [member]);
-
-  const handleLogin = (m: FamilyMember) => {
+  const handleAuthenticate = (m: FamilyMember) => {
     setMember(m);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+    setView("portal");
   };
 
-  const handleLogout = () => {
+  const handleSignOut = () => {
     setMember(null);
-    setShowAdmin(false);
-    setActiveView("rsvp");
-    setDelegatedGuests([]);
-    setEditingGuestName(null);
+    setView("thankyou");
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  // Admin edits a specific guest from the status table
-  const handleEditGuest = (guestName: string) => {
-    setEditingGuestName(guestName);
-    setShowAdmin(false);
-    setActiveView("rsvp");
-  };
-
-  if (!member) {
-    return <ReunionLogin onLogin={handleLogin} />;
-  }
-
-  if (showAdmin && isAdmin(member)) {
+  if (view === "portal" && member) {
     return (
-      <AdminPanel
-        onBack={() => setShowAdmin(false)}
-        adminCode={member.code}
-        adminName={member.name}
-        onEditGuest={handleEditGuest}
+      <ReunionPortal
+        member={member}
+        onBack={handleSignOut}
+        onShowAdmin={() => setView("admin")}
       />
     );
   }
 
-  return (
-    <>
-      {/* RSVP / Photos toggle bar */}
-      <div className="reunion-page">
-        <div className="reunion-grain" />
-        <div className="relative z-10 max-w-2xl mx-auto pt-6 px-4 flex items-center justify-between">
-          <div className="reunion-view-toggle">
-            <button
-              onClick={() => { setActiveView("rsvp"); setEditingGuestName(null); }}
-              className={`reunion-view-btn ${activeView === "rsvp" ? "reunion-view-btn-active" : ""}`}
-            >
-              RSVP
-            </button>
-            <button
-              onClick={() => setActiveView("photos")}
-              className={`reunion-view-btn ${activeView === "photos" ? "reunion-view-btn-active" : ""}`}
-            >
-              Photos
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            {isAdmin(member) && (
-              <button
-                onClick={() => setShowAdmin(true)}
-                className="reunion-button-outline px-3 py-1.5 rounded-lg text-xs"
-              >
-                Admin
-              </button>
-            )}
-            <button
-              onClick={handleLogout}
-              className="reunion-body text-xs opacity-50 hover:opacity-80 transition-opacity underline"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-      </div>
+  if (view === "admin" && member && isAdmin(member)) {
+    return (
+      <AdminPanel
+        onBack={() => setView("portal")}
+        adminCode={member.code}
+        adminName={member.name}
+        onEditGuest={() => setView("portal")}
+      />
+    );
+  }
 
-      {activeView === "rsvp" ? (
-        <RSVPForm
-          member={member}
-          onLogout={handleLogout}
-          isAdmin={isAdmin(member)}
-          onShowAdmin={() => setShowAdmin(true)}
-          delegatedGuests={delegatedGuests}
-          editingGuestName={editingGuestName}
-          onDoneEditingGuest={() => setEditingGuestName(null)}
-        />
-      ) : (
-        <PhotoGallery member={member} />
-      )}
-    </>
-  );
+  return <ReunionThankYou onAuthenticate={handleAuthenticate} />;
 }
