@@ -13,6 +13,7 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
   const [photos, setPhotos] = useState<ReunionPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const admin = isAdmin(member);
 
   // Carousel state
@@ -93,10 +94,14 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
     }
   };
 
-  const handleDelete = async (photo: ReunionPhoto, e: React.MouseEvent) => {
+  const handleDeleteClick = (photo: ReunionPhoto, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm(`Delete this photo${photo.caption ? ` ("${photo.caption}")` : ""}?`)) return;
+    setConfirmingDelete(photo.id);
+  };
 
+  const handleDeleteConfirm = async (photo: ReunionPhoto, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmingDelete(null);
     setDeleting(photo.id);
     try {
       await deletePhoto(photo.id);
@@ -107,6 +112,11 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
     } finally {
       setDeleting(null);
     }
+  };
+
+  const handleDeleteCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmingDelete(null);
   };
 
   const currentPhoto = photos[currentIndex];
@@ -177,22 +187,44 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
                     loading="lazy"
                   />
                   {admin && (
-                    <button
-                      className="reunion-photo-delete"
-                      onClick={(e) => handleDelete(photo, e)}
-                      disabled={deleting === photo.id}
-                      title="Delete photo"
-                    >
-                      {deleting === photo.id ? (
+                    deleting === photo.id ? (
+                      <div className="reunion-photo-delete opacity-100">
                         <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      ) : (
+                      </div>
+                    ) : confirmingDelete === photo.id ? (
+                      <div
+                        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 rounded-t-lg"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="reunion-body text-xs text-white/80">Delete this photo?</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => handleDeleteConfirm(photo, e)}
+                            className="px-3 py-1 rounded text-xs bg-red-700 hover:bg-red-600 text-white transition-colors"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            onClick={handleDeleteCancel}
+                            className="px-3 py-1 rounded text-xs bg-white/20 hover:bg-white/30 text-white transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        className="reunion-photo-delete"
+                        onClick={(e) => handleDeleteClick(photo, e)}
+                        title="Delete photo"
+                      >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M3 6h18" />
                           <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                           <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                         </svg>
-                      )}
-                    </button>
+                      </button>
+                    )
                   )}
                 </div>
                 <div className="p-3">

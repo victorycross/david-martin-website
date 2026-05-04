@@ -25,6 +25,7 @@ export function MemoryBook({ member }: MemoryBookProps) {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const admin = isAdmin(member);
 
   useEffect(() => {
@@ -57,7 +58,8 @@ export function MemoryBook({ member }: MemoryBookProps) {
     }
   };
 
-  const handleDelete = async (memory: ReunionMemory) => {
+  const handleDeleteConfirm = async (memory: ReunionMemory) => {
+    setConfirmingDelete(null);
     setDeleting(memory.id);
     try {
       await deleteMemory(memory.id, memory.photo_path);
@@ -151,14 +153,32 @@ export function MemoryBook({ member }: MemoryBookProps) {
                     <span className="reunion-body text-xs opacity-35">{formatDate(memory.created_at)}</span>
                   </div>
                   {(admin || memory.author_code === member.code) && (
-                    <button
-                      onClick={() => handleDelete(memory)}
-                      disabled={deleting === memory.id}
-                      className="reunion-body text-base opacity-25 hover:opacity-60 hover:text-red-400 transition-all leading-none ml-2 shrink-0"
-                      title="Delete"
-                    >
-                      {deleting === memory.id ? "…" : "×"}
-                    </button>
+                    deleting === memory.id ? (
+                      <span className="reunion-body text-xs opacity-40 ml-2">Deleting…</span>
+                    ) : confirmingDelete === memory.id ? (
+                      <div className="flex items-center gap-2 ml-2 shrink-0">
+                        <button
+                          onClick={() => handleDeleteConfirm(memory)}
+                          className="px-2 py-0.5 rounded text-xs bg-red-700 hover:bg-red-600 text-white transition-colors"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={() => setConfirmingDelete(null)}
+                          className="reunion-body text-xs opacity-50 hover:opacity-80 underline transition-opacity"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmingDelete(memory.id)}
+                        className="reunion-body text-base opacity-25 hover:opacity-60 hover:text-red-400 transition-all leading-none ml-2 shrink-0"
+                        title="Delete"
+                      >
+                        ×
+                      </button>
+                    )
                   )}
                 </div>
 
