@@ -18,15 +18,11 @@ export default function FamilyReunion() {
     return () => { document.title = original; };
   }, []);
 
-  // Restore session but only show portal if they had authenticated before
+  // Restore session — stay on thank-you page, member used as shortcut
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const m: FamilyMember = JSON.parse(saved);
-        setMember(m);
-        setView("portal");
-      }
+      if (saved) setMember(JSON.parse(saved));
     } catch {
       // ignore
     }
@@ -65,5 +61,5 @@ export default function FamilyReunion() {
     );
   }
 
-  return <ReunionThankYou onAuthenticate={handleAuthenticate} />;
+  return <ReunionThankYou onAuthenticate={handleAuthenticate} currentMember={member} />;
 }

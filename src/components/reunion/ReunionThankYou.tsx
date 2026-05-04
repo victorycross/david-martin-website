@@ -6,9 +6,10 @@ import { getAllMembers } from "@/data/reunion-data";
 
 interface ReunionThankYouProps {
   onAuthenticate: (member: FamilyMember) => void;
+  currentMember?: FamilyMember | null;
 }
 
-export function ReunionThankYou({ onAuthenticate }: ReunionThankYouProps) {
+export function ReunionThankYou({ onAuthenticate, currentMember }: ReunionThankYouProps) {
   const [allMembers, setAllMembers] = useState<FamilyMember[]>([]);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -112,15 +113,32 @@ export function ReunionThankYou({ onAuthenticate }: ReunionThankYouProps) {
             personal access code to continue.
           </p>
 
-          {!formOpen ? (
+          {currentMember ? (
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => onAuthenticate(currentMember)}
+                className="reunion-button px-5 py-2.5 rounded-lg text-sm"
+              >
+                Continue as {currentMember.name}
+              </button>
+              <button
+                onClick={() => setFormOpen((v) => !v)}
+                className="reunion-body text-xs opacity-50 hover:opacity-80 transition-opacity underline"
+              >
+                Use a different code
+              </button>
+            </div>
+          ) : !formOpen ? (
             <button
               onClick={() => setFormOpen(true)}
               className="reunion-button px-5 py-2.5 rounded-lg text-sm"
             >
               Access Family Memories
             </button>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
+          ) : null}
+
+          {(formOpen || !currentMember) && (
+            <form onSubmit={handleSubmit} className={`space-y-4 max-w-sm ${currentMember ? "mt-4" : ""}`}>
               <div className="space-y-2">
                 <Label htmlFor="access-code" className="reunion-label">
                   Access Code
@@ -132,7 +150,7 @@ export function ReunionThankYou({ onAuthenticate }: ReunionThankYouProps) {
                   onChange={(e) => { setCode(e.target.value); setError(""); }}
                   placeholder="e.g. ingrid2026"
                   className={`reunion-input ${isShaking ? "reunion-shake" : ""}`}
-                  autoFocus
+                  autoFocus={formOpen}
                   autoComplete="off"
                 />
                 {error && (
@@ -147,13 +165,15 @@ export function ReunionThankYou({ onAuthenticate }: ReunionThankYouProps) {
                 >
                   Continue
                 </button>
-                <button
-                  type="button"
-                  onClick={() => { setFormOpen(false); setCode(""); setError(""); }}
-                  className="reunion-body text-xs opacity-50 hover:opacity-80 transition-opacity underline"
-                >
-                  Cancel
-                </button>
+                {(currentMember || formOpen) && (
+                  <button
+                    type="button"
+                    onClick={() => { setFormOpen(false); setCode(""); setError(""); }}
+                    className="reunion-body text-xs opacity-50 hover:opacity-80 transition-opacity underline"
+                  >
+                    Cancel
+                  </button>
+                )}
               </div>
             </form>
           )}
