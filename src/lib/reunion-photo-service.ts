@@ -51,6 +51,9 @@ export async function uploadPhoto({
   if (!file.type.startsWith("image/")) {
     throw new Error("Only image files are allowed");
   }
+  if (file.type === "image/heic" || file.type === "image/heif" || /\.hei[cf]$/i.test(file.name)) {
+    throw new Error("HEIC/HEIF photos can't be displayed in a browser. Please convert to JPEG or PNG first (on iPhone: Settings → Camera → Formats → Most Compatible).");
+  }
   if (file.size > 10 * 1024 * 1024) {
     throw new Error("File must be under 10MB");
   }

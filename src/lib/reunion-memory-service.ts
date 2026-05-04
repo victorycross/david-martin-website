@@ -46,6 +46,9 @@ export async function addMemory({
 
   if (photoFile) {
     if (!photoFile.type.startsWith("image/")) throw new Error("Only image files are allowed");
+    if (photoFile.type === "image/heic" || photoFile.type === "image/heif" || /\.hei[cf]$/i.test(photoFile.name)) {
+      throw new Error("HEIC/HEIF photos can't be displayed in a browser. Please convert to JPEG or PNG first (on iPhone: Settings → Camera → Formats → Most Compatible).");
+    }
     if (photoFile.size > 10 * 1024 * 1024) throw new Error("File must be under 10 MB");
     const ext = photoFile.name.split(".").pop() || "jpg";
     photo_path = `memories/${authorCode}/${Date.now()}.${ext}`;
