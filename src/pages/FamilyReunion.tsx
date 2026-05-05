@@ -6,10 +6,10 @@ import { isAdmin, type FamilyMember } from "@/data/reunion-config";
 
 const STORAGE_KEY = "reunion_member";
 
-type View = "thankyou" | "portal" | "admin";
+type View = "landing" | "portal" | "admin";
 
 export default function FamilyReunion() {
-  const [view, setView] = useState<View>("thankyou");
+  const [view, setView] = useState<View>("landing");
   const [member, setMember] = useState<FamilyMember | null>(null);
 
   useEffect(() => {
@@ -18,7 +18,6 @@ export default function FamilyReunion() {
     return () => { document.title = original; };
   }, []);
 
-  // Restore session — stay on thank-you page, member used as shortcut
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -28,20 +27,15 @@ export default function FamilyReunion() {
     }
   }, []);
 
-  // Called when code is validated — saves member but stays on thank-you page
-  const handleAuthenticate = (m: FamilyMember) => {
+  const handleEnterPortal = (m: FamilyMember) => {
     setMember(m);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
-  };
-
-  // Called when user explicitly clicks "Continue as [Name]"
-  const handleEnterPortal = () => {
     setView("portal");
   };
 
   const handleSignOut = () => {
     setMember(null);
-    setView("thankyou");
+    setView("landing");
     localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -66,5 +60,5 @@ export default function FamilyReunion() {
     );
   }
 
-  return <ReunionThankYou onAuthenticate={handleAuthenticate} onEnterPortal={handleEnterPortal} currentMember={member} />;
+  return <ReunionThankYou onEnterPortal={handleEnterPortal} currentMember={member} />;
 }

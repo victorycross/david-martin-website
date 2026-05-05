@@ -72,11 +72,9 @@ export function MemoryBook({ member }: MemoryBookProps) {
   };
 
   return (
-    <div className="reunion-page min-h-screen py-8 px-4">
-      <div className="reunion-grain" />
-      <div className="relative z-10 max-w-2xl mx-auto">
+    <div>
 
-        <div className="text-center mb-8 pt-2">
+        <div className="text-center mb-8">
           <h2 className="reunion-heading text-2xl mb-1">Memory Book</h2>
           <p className="reunion-body text-sm opacity-50">Stories and moments from May 3, 2026</p>
         </div>
@@ -203,7 +201,6 @@ export function MemoryBook({ member }: MemoryBookProps) {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }

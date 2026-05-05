@@ -122,10 +122,7 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
   const currentPhoto = photos[currentIndex];
 
   return (
-    <div className="reunion-page min-h-screen py-8 px-4">
-      <div className="reunion-grain" />
-
-      <div className="relative z-10 max-w-3xl mx-auto">
+    <div>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -240,7 +237,6 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
             ))}
           </div>
         )}
-      </div>
 
       {/* ── Fullscreen Carousel / Lightbox ── */}
       {carouselOpen && currentPhoto && (
@@ -364,3 +360,4 @@ export function PhotoGallery({ member }: PhotoGalleryProps) {
     </div>
   );
 }
+
