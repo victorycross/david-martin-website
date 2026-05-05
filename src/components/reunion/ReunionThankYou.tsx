@@ -6,10 +6,11 @@ import { getAllMembers } from "@/data/reunion-data";
 
 interface ReunionThankYouProps {
   onAuthenticate: (member: FamilyMember) => void;
+  onEnterPortal: () => void;
   currentMember?: FamilyMember | null;
 }
 
-export function ReunionThankYou({ onAuthenticate, currentMember }: ReunionThankYouProps) {
+export function ReunionThankYou({ onAuthenticate, onEnterPortal, currentMember }: ReunionThankYouProps) {
   const [allMembers, setAllMembers] = useState<FamilyMember[]>([]);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -26,7 +27,11 @@ export function ReunionThankYou({ onAuthenticate, currentMember }: ReunionThankY
       (m) => m.code.toLowerCase() === code.trim().toLowerCase()
     );
     if (member) {
-      onAuthenticate(member);
+      // Stay on the thank-you page — just reveal the Continue shortcut
+      setCode("");
+      setError("");
+      setFormOpen(false);
+      onAuthenticate(member); // stores member in parent state without navigating
     } else {
       setError("Code not recognized. Please check your invitation.");
       setIsShaking(true);
@@ -116,7 +121,7 @@ export function ReunionThankYou({ onAuthenticate, currentMember }: ReunionThankY
           {currentMember ? (
             <div className="flex items-center gap-4">
               <button
-                onClick={() => onAuthenticate(currentMember)}
+                onClick={onEnterPortal}
                 className="reunion-button px-5 py-2.5 rounded-lg text-sm"
               >
                 Continue as {currentMember.name}

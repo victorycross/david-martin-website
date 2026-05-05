@@ -28,9 +28,14 @@ export default function FamilyReunion() {
     }
   }, []);
 
+  // Called when code is validated — saves member but stays on thank-you page
   const handleAuthenticate = (m: FamilyMember) => {
     setMember(m);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+  };
+
+  // Called when user explicitly clicks "Continue as [Name]"
+  const handleEnterPortal = () => {
     setView("portal");
   };
 
@@ -61,5 +66,5 @@ export default function FamilyReunion() {
     );
   }
 
-  return <ReunionThankYou onAuthenticate={handleAuthenticate} currentMember={member} />;
+  return <ReunionThankYou onAuthenticate={handleAuthenticate} onEnterPortal={handleEnterPortal} currentMember={member} />;
 }
