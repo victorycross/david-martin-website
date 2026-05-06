@@ -13,10 +13,6 @@ export default function FamilyReunion() {
   const [member, setMember] = useState<FamilyMember | null>(null);
 
   useEffect(() => {
-    window.location.replace("https://jorgensen.social");
-  }, []);
-
-  useEffect(() => {
     const original = document.title;
     document.title = "2026 Family Reunion";
     return () => { document.title = original; };
