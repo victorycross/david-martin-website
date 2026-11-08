@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Mail, Send } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
 
 interface ContactFormData {
   name: string
@@ -22,6 +23,8 @@ export function ContactForm() {
     message: ""
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Hidden from people; bots that fill every field get filtered out by the server.
+  const [honeypot, setHoneypot] = useState("")
   const { toast } = useToast()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -33,26 +36,11 @@ export function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    console.log('Form submission started with data:', formData)
-
     try {
-      console.log('Calling edge function at:', 'https://getnwxzthubdrallsmtf.supabase.co/functions/v1/contact')
-      const response = await fetch('https://getnwxzthubdrallsmtf.supabase.co/functions/v1/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const { error } = await supabase.functions.invoke('contact', {
+        body: { ...formData, website: honeypot },
       })
-
-      console.log('Response status:', response.status)
-      console.log('Response headers:', response.headers)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Error response:', errorText)
-        throw new Error(`Failed to send message: ${response.status} - ${errorText}`)
-      }
+      if (error) throw error
 
       toast({
         title: "Message sent successfully!",
@@ -85,6 +73,17 @@ export function ContactForm() {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+          <label htmlFor="website">Leave this field empty</label>
+          <input
+            id="website"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>

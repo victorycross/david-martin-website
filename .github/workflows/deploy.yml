@@ -44,6 +44,8 @@ jobs:
         path: ./dist
 
   deploy:
+    # Pull requests only build. Only a push to main publishes the site.
+    if: github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
