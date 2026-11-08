@@ -1,4 +1,4 @@
-project_id = "getnwxzthubdrallsmtf"
+project_id = "xmpaerslpzkqilsuqbms"
 
 [functions.contact]
-verify_jwt = false
+verify_jwt = true
